@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>החיפושית המופלאה — משחק חשבון</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+:root {
+    --lb-red: #E43B3B; --lb-red-dark: #C62828; --lb-red-light: #FF6659;
+    --lb-black: #1A1A2E; --lb-black-light: #2D2D44;
+    --lb-pink: #FFB6C1; --lb-pink-light: #FFD6DE;
+    --lb-gold: #FFD700; --lb-gold-dark: #E6C200;
+    --lb-green: #4CAF50; --lb-green-light: #81C784;
+    --lb-cream: #FFF8E7; --lb-cream-dark: #F5ECD7;
+    --lb-blue: #4FC3F7; --lb-blue-light: #B3E5FC;
+    --correct: #4CAF50; --wrong: #FF5252; --retry: #FF9800;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.1); --shadow-md: 0 4px 16px rgba(0,0,0,0.15); --shadow-lg: 0 8px 32px rgba(0,0,0,0.2);
+    --shadow-glow-red: 0 0 20px rgba(228,59,59,0.3); --shadow-glow-gold: 0 0 20px rgba(255,215,0,0.3);
+    --gap-xs: 4px; --gap-sm: 8px; --gap-md: 16px; --gap-lg: 24px; --gap-xl: 32px;
+    --radius-sm: 8px; --radius-md: 16px; --radius-lg: 24px; --radius-full: 50%;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Rubik','Arial',sans-serif;direction:rtl;background:var(--lb-cream);color:var(--lb-black);-webkit-user-select:none;user-select:none}
+.screen{display:none;flex-direction:column;position:fixed;inset:0;overflow-y:auto;overflow-x:hidden}
+.screen.active{display:flex;animation:screenFadeIn .3s ease}
+h1{font-size:2rem;font-weight:800;line-height:1.2} h2{font-size:1.5rem;font-weight:700} h3{font-size:1.15rem;font-weight:600}
+
+/* Buttons */
+.btn-hero{display:inline-flex;align-items:center;gap:var(--gap-sm);padding:18px 44px;font-size:1.4rem;font-weight:700;font-family:inherit;color:#fff;background:linear-gradient(135deg,#E43B3B 0%,#C62828 50%,#B71C1C 100%);border:none;border-radius:50px;cursor:pointer;box-shadow:0 6px 24px rgba(228,59,59,.4),inset 0 1px 0 rgba(255,255,255,.2);transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden}
+.btn-hero::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);transition:left .5s}
+.btn-hero:hover::before{left:100%}
+.btn-hero:active{transform:scale(.95)}
+.btn-primary{padding:12px 24px;font-size:1.1rem;font-weight:600;font-family:inherit;color:#fff;background:linear-gradient(135deg,var(--lb-red),var(--lb-red-dark));border:none;border-radius:var(--radius-md);cursor:pointer;box-shadow:var(--shadow-sm);transition:transform .15s}
+.btn-primary:active{transform:scale(.95)}
+.btn-secondary{padding:12px 24px;font-size:1.1rem;font-weight:600;font-family:inherit;color:var(--lb-black);background:#fff;border:2px solid var(--lb-pink);border-radius:var(--radius-md);cursor:pointer;transition:transform .15s}
+.btn-secondary:active{transform:scale(.95)}
+.btn-accent{padding:12px 24px;font-size:1.1rem;font-weight:600;font-family:inherit;color:var(--lb-black);background:linear-gradient(135deg,var(--lb-gold),var(--lb-gold-dark));border:none;border-radius:var(--radius-md);cursor:pointer;box-shadow:var(--shadow-sm);transition:transform .15s}
+.btn-accent:active{transform:scale(.95)}
+.back-btn{padding:8px 16px;font-size:1rem;font-weight:600;font-family:inherit;color:var(--lb-black);background:#fff;border:2px solid var(--lb-pink);border-radius:var(--radius-md);cursor:pointer;transition:transform .15s}
+.back-btn:active{transform:scale(.95)}
+
+input[type="text"]{width:100%;max-width:300px;padding:14px 20px;font-size:1.2rem;font-family:inherit;text-align:center;border:3px solid var(--lb-pink);border-radius:var(--radius-md);background:#fff;color:var(--lb-black);outline:none;transition:border-color .2s}
+input[type="text"]:focus{border-color:var(--lb-red);box-shadow:var(--shadow-glow-red)}
+
+.coin-icon{font-size:1.3em}.coin-count{font-size:1.2rem;font-weight:700;color:var(--lb-gold-dark);background:linear-gradient(135deg,#FFF8E7,#FFE082);padding:2px 8px;border-radius:var(--radius-sm)}
+.map-header,.exercise-header,.shop-header,.house-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:linear-gradient(135deg,#fff 0%,#FFF0F3 100%);box-shadow:0 2px 12px rgba(228,59,59,.08);z-index:10;flex-shrink:0;border-bottom:2px solid rgba(255,182,193,.3)}
+.header-right{display:flex;align-items:center;gap:var(--gap-sm)}
+.header-left{display:flex;align-items:center;gap:var(--gap-xs)}
+.player-avatar{font-size:1.5rem}.player-name{font-weight:600;font-size:1rem}
+
+/* Sound toggle */
+.sound-toggle{position:fixed;bottom:12px;left:12px;z-index:90;width:44px;height:44px;border-radius:var(--radius-full);border:2px solid var(--lb-pink);background:#fff;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);transition:transform .1s}
+.sound-toggle:active{transform:scale(.9)}
+
+/* Tikki mascot */
+.tikki{position:fixed;bottom:16px;right:16px;z-index:80;font-size:2.5rem;animation:bob 3s infinite ease-in-out;filter:drop-shadow(0 2px 4px rgba(0,0,0,.2));transition:transform .3s;cursor:pointer}
+.tikki:hover{transform:scale(1.2)}
+.tikki.celebrate{animation:tikkiCelebrate .6s ease}
+.tikki-bubble{position:fixed;bottom:70px;right:10px;z-index:81;background:#fff;border:2px solid var(--lb-pink);border-radius:var(--radius-md);padding:8px 14px;font-size:.9rem;font-weight:600;max-width:160px;text-align:center;box-shadow:var(--shadow-sm);opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s;pointer-events:none}
+.tikki-bubble.show{opacity:1;transform:translateY(0)}
+.tikki-bubble::after{content:'';position:absolute;bottom:-8px;right:20px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid #fff}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center;padding:var(--gap-md)}
+.modal-overlay.active{display:flex}
+.modal-content{background:#fff;border-radius:var(--radius-lg);padding:var(--gap-xl);text-align:center;max-width:340px;width:100%;box-shadow:var(--shadow-lg)}
+.modal-emoji{font-size:3rem;margin-bottom:var(--gap-md)}.modal-price{font-size:1.3rem;margin:var(--gap-md) 0;font-weight:600}
+.modal-buttons{display:flex;gap:var(--gap-md);justify-content:center;margin-top:var(--gap-lg)}
+
+/* Confetti */
+.confetti-container{position:fixed;inset:0;pointer-events:none;z-index:200;overflow:hidden}
+.confetti{position:absolute;width:10px;height:10px;border-radius:2px;top:-10px;animation:confettiFall 2.5s linear forwards}
+
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--lb-pink);border-radius:3px}
+
+/* === AI IMAGE INTEGRATION === */
+.ai-bg{background-size:cover;background-position:center;background-repeat:no-repeat}
+.character-img{max-width:100%;height:auto;filter:drop-shadow(0 4px 8px rgba(0,0,0,.2))}
+.item-img{width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.15))}
+.mascot-img{width:60px;height:60px;object-fit:contain}
+/* Ladybug character in exercise header */
+.exercise-character{position:absolute;bottom:70px;right:10px;width:80px;height:80px;z-index:5;animation:bob 3s infinite ease-in-out;pointer-events:none;opacity:.9}
+/* Welcome character */
+.welcome-character{width:140px;height:140px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,.3));animation:bob 3s infinite ease-in-out;margin-bottom:var(--gap-md)}
+/* Map background image layer */
+.map-bg-img{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.15;pointer-events:none;z-index:0}
+/* Shop background image layer */
+.shop-bg-img{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.1;pointer-events:none;z-index:0}
+/* Shop item image */
+.shop-item-img{width:56px;height:56px;object-fit:contain;filter:drop-shadow(0 1px 3px rgba(0,0,0,.15))}
+/* House placed item image */
+.placed-item-img{width:80%;height:80%;object-fit:contain}
+/* Inventory item image */
+.inv-item-img{width:36px;height:36px;object-fit:contain}
+/* Tikki image mascot */
+.tikki-img{width:50px;height:50px;object-fit:contain}
+
+/* === WELCOME === */
+.welcome-bg{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,#0B0B1A 0%,#16213E 25%,#1A1A2E 40%,#4A1942 65%,#E43B3B 100%);background-image:url('assets/images/backgrounds/welcome.png'),linear-gradient(180deg,#0B0B1A 0%,#16213E 25%,#1A1A2E 40%,#4A1942 65%,#E43B3B 100%);background-size:cover,cover;background-position:center bottom,center;position:relative;overflow:hidden;min-height:100vh}
+.floating-ladybugs{position:absolute;inset:0;pointer-events:none}
+.float-lb{position:absolute;font-size:2rem;left:var(--x);animation:floatUp 6s var(--delay) infinite ease-in-out;opacity:.6}
+.welcome-content{text-align:center;z-index:2;padding:var(--gap-xl)}
+.welcome-logo{margin-bottom:var(--gap-xl)}
+.logo-ladybug{font-size:5rem;display:block;margin-bottom:var(--gap-sm);animation:pulse 2s infinite}
+.welcome-logo h1{color:#fff;font-size:2.4rem;text-shadow:0 2px 12px rgba(0,0,0,.4)}
+.welcome-logo h2{color:var(--lb-gold);font-size:1.4rem;font-weight:600;margin-top:var(--gap-xs);text-shadow:0 1px 4px rgba(0,0,0,.3)}
+.welcome-text{color:#fff;font-size:1.3rem;margin-bottom:var(--gap-md)}
+.welcome-sub{color:var(--lb-pink-light);font-size:1.1rem;margin-bottom:var(--gap-lg)}
+#welcome-new,#welcome-back{display:flex;flex-direction:column;align-items:center;gap:var(--gap-md)}
+#player-name{background:rgba(255,255,255,.95);border-color:var(--lb-gold)}
+.welcome-stars{position:absolute;inset:0;pointer-events:none}
+.welcome-star{position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;animation:twinkle 2s infinite}
+
+/* === MAP === */
+#screen-map{background:linear-gradient(180deg,var(--lb-blue-light) 0%,var(--lb-cream) 40%);position:relative}
+#screen-map::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(228,59,59,.04) 1px,transparent 1px);background-size:24px 24px;pointer-events:none;z-index:0}
+#screen-map>*{position:relative;z-index:1}
+.map-title{text-align:center;padding:var(--gap-md) var(--gap-md) 0}
+.map-title h2{font-size:1.4rem;color:var(--lb-black)}.map-title p{color:var(--lb-black-light);font-size:1rem;margin-top:var(--gap-xs)}
+.map-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--gap-md);padding:var(--gap-lg) var(--gap-md);flex:1;align-content:center;max-width:500px;margin:0 auto;width:100%}
+.map-station{display:flex;flex-direction:column;align-items:center;gap:var(--gap-sm);padding:var(--gap-lg) var(--gap-md);background:linear-gradient(135deg,#fff,#FEFEFE);border-radius:var(--radius-lg);box-shadow:0 4px 20px rgba(0,0,0,.08);cursor:pointer;transition:transform .2s cubic-bezier(.4,0,.2,1),box-shadow .2s;position:relative;border:3px solid rgba(255,182,193,.3);overflow:hidden}
+.map-station::after{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--lb-red),var(--lb-pink),var(--lb-gold));opacity:0;transition:opacity .2s}
+.map-station:not(.locked):hover::after{opacity:1}
+.map-station:active{transform:scale(.95)}
+.map-station:not(.locked):hover{border-color:var(--lb-red);box-shadow:var(--shadow-lg),var(--shadow-glow-red)}
+.map-station.locked{opacity:.5;cursor:not-allowed;background:var(--lb-cream-dark)}
+.station-icon{font-size:2.5rem;width:72px;height:72px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-full);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+/* Each station gets a unique color */
+[data-type="counting"] .station-icon{background:linear-gradient(135deg,#B3E5FC,#81D4FA)}
+[data-type="addition"] .station-icon{background:linear-gradient(135deg,#F8BBD0,#F48FB1)}
+[data-type="subtraction"] .station-icon{background:linear-gradient(135deg,#C8E6C9,#A5D6A7)}
+[data-type="comparison"] .station-icon{background:linear-gradient(135deg,#FFE0B2,#FFCC80)}
+.station-name{font-size:1.1rem;font-weight:700;color:var(--lb-black)}
+.station-stars{font-size:.9rem;letter-spacing:2px}
+.lock-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2rem;background:rgba(255,255,255,.6);border-radius:var(--radius-lg)}
+.map-bottom-nav{display:flex;gap:var(--gap-md);padding:var(--gap-md);justify-content:center;background:linear-gradient(180deg,#fff,#FFF5F7);box-shadow:0 -4px 16px rgba(228,59,59,.06);flex-shrink:0;border-top:2px solid rgba(255,182,193,.2)}
+.map-nav-btn{display:flex;flex-direction:column;align-items:center;gap:var(--gap-xs);padding:14px 32px;font-size:1rem;font-weight:600;font-family:inherit;color:var(--lb-black);background:linear-gradient(135deg,#fff,var(--lb-cream));border:2px solid rgba(255,182,193,.4);border-radius:var(--radius-lg);cursor:pointer;transition:transform .15s,box-shadow .2s;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.map-nav-btn:hover{box-shadow:0 4px 16px rgba(228,59,59,.12);border-color:var(--lb-pink)}
+.map-nav-btn span:first-child{font-size:1.5rem}.map-nav-btn:active{transform:scale(.95)}
+/* Map decoration */
+.map-clouds{position:absolute;top:0;left:0;right:0;height:120px;pointer-events:none;overflow:hidden}
+.cloud{position:absolute;font-size:2rem;opacity:.3;animation:cloudDrift 20s linear infinite}
+
+/* === EXERCISES === */
+#screen-exercises{background:var(--lb-cream)}
+.exercise-title{font-size:1.1rem;font-weight:700;color:var(--lb-black)}
+.exercise-progress{display:flex;align-items:center;gap:var(--gap-sm);padding:var(--gap-sm) var(--gap-md);flex-shrink:0}
+.progress-track{flex:1;height:14px;background:var(--lb-cream-dark);border-radius:7px;overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.1)}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--lb-red),var(--lb-red-light));border-radius:7px;transition:width .4s ease;width:0%;position:relative}
+.progress-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.3),transparent);border-radius:7px}
+.progress-text{font-size:.9rem;font-weight:600;color:var(--lb-black-light);min-width:50px;text-align:center;direction:ltr}
+.exercise-content{flex:1;display:flex;flex-direction:column;align-items:center;padding:var(--gap-md);gap:var(--gap-md);overflow-y:auto;position:relative}
+.exercise-visual{width:100%;max-width:420px;min-height:120px;display:flex;align-items:center;justify-content:center;padding:var(--gap-md);background:rgba(255,255,255,.6);border-radius:var(--radius-lg);box-shadow:inset 0 1px 4px rgba(0,0,0,.05)}
+.counting-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:320px}
+.count-item{font-size:2.2rem;animation:popIn .3s ease backwards;transition:opacity .3s}
+.count-item.crossed{opacity:.25;filter:grayscale(1);position:relative}
+.count-item.crossed::after{content:'✕';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--wrong);font-size:1.2rem;font-weight:800}
+.groups-visual{display:flex;align-items:center;gap:var(--gap-md);flex-wrap:wrap;justify-content:center}
+.group-a,.group-b{display:flex;flex-wrap:wrap;gap:6px;max-width:150px;justify-content:center;padding:10px;background:rgba(255,182,193,.15);border-radius:var(--radius-md);border:2px dashed rgba(255,182,193,.4)}
+.operator{font-size:2.2rem;font-weight:800;color:var(--lb-red)}
+.comparison-visual{display:flex;align-items:flex-start;gap:var(--gap-lg);justify-content:center}
+.compare-side{display:flex;flex-direction:column;align-items:center;gap:var(--gap-sm)}
+.compare-number{font-size:2.8rem;font-weight:800;color:var(--lb-red);background:#fff;width:72px;height:72px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-full);box-shadow:var(--shadow-md)}
+.compare-dots{display:flex;flex-wrap:wrap;gap:2px;max-width:90px;justify-content:center;font-size:.85rem}
+.compare-question{font-size:2.2rem;font-weight:800;color:var(--lb-gold-dark);margin-top:20px;animation:pulse 1.5s infinite}
+.exercise-question{font-size:2.4rem;font-weight:800;color:var(--lb-black);text-align:center;background:linear-gradient(135deg,#FFF0F3,#FFF8E7);border-radius:var(--radius-lg);padding:12px 28px;box-shadow:0 2px 12px rgba(228,59,59,.1);border:2px solid rgba(255,182,193,.3)}
+.number-buttons{display:flex;flex-wrap:wrap;gap:var(--gap-sm);justify-content:center;max-width:420px;padding:var(--gap-sm)}
+.num-btn{width:58px;height:58px;font-size:1.4rem;font-weight:700;font-family:inherit;color:var(--lb-black);background:#fff;border:3px solid var(--lb-pink);border-radius:var(--radius-md);cursor:pointer;transition:transform .1s,background .15s,border-color .15s;display:flex;align-items:center;justify-content:center}
+.num-btn:active{transform:scale(.9);background:var(--lb-pink-light)}
+.num-btn.wrong-btn{border-color:var(--wrong);background:#FFEBEE}
+.num-btn.correct-btn{border-color:var(--correct);background:#E8F5E9;animation:pulseGreen .5s ease}
+.num-btn:disabled{opacity:.5;cursor:default}
+.num-btn:not(:disabled):hover{border-color:var(--lb-red);box-shadow:0 0 8px rgba(228,59,59,.2)}
+.comparison-buttons{display:flex;gap:var(--gap-md);justify-content:center}
+.compare-btn{display:flex;flex-direction:column;align-items:center;gap:var(--gap-xs);padding:16px 28px;font-family:inherit;background:#fff;border:3px solid var(--lb-pink);border-radius:var(--radius-lg);cursor:pointer;transition:transform .1s;min-width:88px}
+.compare-btn:active{transform:scale(.9)}
+.compare-symbol{font-size:2.2rem;font-weight:800;color:var(--lb-red)}
+.compare-label{font-size:.85rem;font-weight:600;color:var(--lb-black-light)}
+.compare-btn:not(:disabled):hover{border-color:var(--lb-red);box-shadow:0 0 8px rgba(228,59,59,.2)}
+.compare-btn.wrong-btn{border-color:var(--wrong)}
+.compare-btn.correct-btn{border-color:var(--correct);background:#E8F5E9}
+.exercise-feedback{text-align:center;font-size:1.5rem;font-weight:700;padding:var(--gap-md);min-height:60px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.exercise-feedback.correct{color:var(--correct);animation:bounceIn .4s}
+.exercise-feedback.wrong{color:var(--wrong)}
+.exercise-feedback.retry{color:var(--retry)}
+
+.session-complete{display:flex;flex-direction:column;align-items:center;gap:var(--gap-lg);padding:var(--gap-xl);text-align:center}
+.celebration-emoji{font-size:3.5rem;animation:bounceIn .5s;position:relative}
+.celebration-emoji::before,.celebration-emoji::after{content:'✨';position:absolute;animation:sparkle 1.5s infinite}
+.celebration-emoji::before{top:-10px;right:-20px;animation-delay:.3s}
+.celebration-emoji::after{top:-10px;left:-20px;animation-delay:.7s}
+.session-stats{display:flex;gap:var(--gap-xl)}
+.stat-item{display:flex;flex-direction:column;align-items:center;gap:var(--gap-xs);background:#fff;padding:16px 24px;border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)}
+.stat-icon{font-size:1.5rem}.stat-value{font-size:2.2rem;font-weight:800;color:var(--lb-red)}.stat-label{font-size:.9rem;color:var(--lb-black-light)}
+.session-buttons{display:flex;flex-wrap:wrap;gap:var(--gap-md);justify-content:center}
+
+/* Streak indicator */
+.streak-indicator{position:absolute;top:8px;left:50%;transform:translateX(-50%);display:flex;gap:4px;align-items:center;font-size:.85rem;font-weight:700;color:var(--lb-gold-dark);opacity:0;transition:opacity .3s}
+.streak-indicator.show{opacity:1}
+
+/* === SHOP === */
+#screen-shop{background:linear-gradient(180deg,var(--lb-pink-light) 0%,var(--lb-cream) 50%)}
+.shop-title{font-size:1.2rem}
+.shop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap-md);padding:var(--gap-md);overflow-y:auto;flex:1;max-width:500px;margin:0 auto;width:100%}
+.shop-item{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;background:linear-gradient(180deg,#fff,#FAFAFA);border-radius:var(--radius-lg);box-shadow:0 2px 12px rgba(0,0,0,.06);border:2px solid rgba(255,182,193,.2);transition:transform .2s cubic-bezier(.4,0,.2,1),border-color .2s,box-shadow .2s}
+.shop-item:not(.owned):not(.too-expensive):hover{transform:translateY(-4px);box-shadow:0 6px 20px rgba(0,0,0,.12)}
+.shop-item:not(.owned):not(.too-expensive):hover{border-color:var(--lb-gold)}
+.shop-item.owned{border-color:var(--lb-green);background:#E8F5E9}
+.shop-item.too-expensive{opacity:.55}
+.shop-item-emoji{font-size:2.2rem}
+.shop-item-name{font-size:.9rem;font-weight:600;white-space:nowrap}
+.shop-item-price{display:flex;align-items:center;gap:4px;font-size:.9rem;font-weight:700;color:var(--lb-gold-dark)}
+.shop-item-owned{color:var(--lb-green);font-weight:700;font-size:.85rem}
+.shop-buy-btn{padding:6px 14px;font-size:.85rem;font-weight:700;font-family:inherit;color:#fff;background:var(--lb-red);border:none;border-radius:var(--radius-sm);cursor:pointer;transition:transform .1s}
+.shop-buy-btn:disabled{background:#ccc;color:#888;cursor:default;font-size:.7rem}
+.shop-buy-btn:not(:disabled):active{transform:scale(.95)}
+.purchase-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--lb-green);color:#fff;padding:12px 24px;border-radius:var(--radius-md);font-weight:600;font-size:1.1rem;z-index:200;animation:toastSlideUp 2s ease forwards;display:flex;align-items:center;gap:var(--gap-sm);box-shadow:var(--shadow-md)}
+
+/* === HOUSE === */
+#screen-house{background:linear-gradient(180deg,#87CEEB 0%,var(--lb-cream) 40%)}
+.house-title{font-size:1.2rem}
+.house-view{flex:1;display:flex;align-items:center;justify-content:center;padding:var(--gap-md);min-height:0}
+.bakery-bg{width:100%;max-width:500px;aspect-ratio:4/3;background:linear-gradient(180deg,#87CEEB 0%,#87CEEB 15%,#FFECD2 15%,#FFF8E7 50%,#D4A574 90%,#8B6914 100%);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);position:relative;border:4px solid var(--lb-pink);overflow:hidden}
+/* Bakery roof */
+.bakery-bg::before{content:'';position:absolute;top:14%;left:0;right:0;height:8px;background:repeating-linear-gradient(90deg,var(--lb-red) 0,var(--lb-red) 20px,var(--lb-red-dark) 20px,var(--lb-red-dark) 40px);z-index:1}
+/* Bakery sign */
+.bakery-sign{position:absolute;top:2%;left:50%;transform:translateX(-50%);background:var(--lb-red);color:#fff;padding:4px 16px;border-radius:var(--radius-sm);font-size:.7rem;font-weight:700;z-index:2;white-space:nowrap;box-shadow:var(--shadow-sm)}
+.house-slots{position:absolute;inset:0}
+.house-slot{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed var(--lb-pink);border-radius:var(--radius-sm);cursor:pointer;transition:background .2s,border-color .2s,transform .15s;font-size:.7rem;background:rgba(255,255,255,.3)}
+.house-slot.empty{background:rgba(255,182,193,.12)}
+.house-slot.empty.accepting{border-color:var(--lb-gold);background:rgba(255,215,0,.15);animation:pulseSlot 1s infinite}
+.house-slot.filled{border:2px solid var(--lb-green);background:rgba(255,255,255,.75)}
+.house-slot:active{transform:scale(.95)}
+.placed-item-emoji{font-size:1.6rem}.placed-item-name{font-size:.55rem;font-weight:600;color:var(--lb-black-light)}
+.slot-label{color:var(--lb-black-light);font-weight:500;opacity:.5;font-size:.6rem}
+.house-tray{background:#fff;border-top:2px solid var(--lb-pink);padding:var(--gap-sm) var(--gap-md);flex-shrink:0}
+.house-tray h3{text-align:center;margin-bottom:var(--gap-sm);font-size:1rem;color:var(--lb-black)}
+.house-inventory{display:flex;gap:var(--gap-sm);overflow-x:auto;padding:var(--gap-sm) 0;min-height:70px;align-items:center;justify-content:center}
+.inventory-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:var(--gap-sm) 12px;background:var(--lb-cream);border:2px solid var(--lb-pink);border-radius:var(--radius-md);cursor:pointer;transition:transform .15s,border-color .15s;flex-shrink:0}
+.inventory-item.selected{border-color:var(--lb-gold);background:rgba(255,215,0,.15);box-shadow:var(--shadow-glow-gold);transform:scale(1.05)}
+.inventory-item:active{transform:scale(.95)}
+.inv-emoji{font-size:1.5rem}.inv-name{font-size:.7rem;font-weight:600}
+.empty-inventory{text-align:center;padding:var(--gap-md);color:var(--lb-black-light)}
+.empty-inventory p{margin-bottom:var(--gap-sm)}
+
+/* === ANIMATIONS === */
+@keyframes screenFadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes floatUp{0%{bottom:-10%;opacity:0;transform:translateX(0) rotate(0)}10%{opacity:.6}90%{opacity:.6}100%{bottom:110%;opacity:0;transform:translateX(20px) rotate(360deg)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes popIn{0%{transform:scale(0);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+@keyframes bounceIn{0%{transform:scale(.3);opacity:0}50%{transform:scale(1.1)}70%{transform:scale(.95)}100%{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.shake{animation:shake .5s ease!important}
+@keyframes pulseGreen{0%{box-shadow:0 0 0 0 rgba(76,175,80,.5)}70%{box-shadow:0 0 0 14px rgba(76,175,80,0)}100%{box-shadow:0 0 0 0 rgba(76,175,80,0)}}
+.flying-coin{position:absolute;font-size:2rem;pointer-events:none;animation:coinFly 1s ease-out forwards;z-index:50;left:50%;top:40%}
+@keyframes coinFly{0%{transform:translate(-50%,0) scale(1);opacity:1}50%{transform:translate(-50%,-150px) scale(1.4);opacity:.8}100%{transform:translate(-50%,-300px) scale(.5);opacity:0}}
+@keyframes pulseSlot{0%,100%{border-color:var(--lb-gold)}50%{border-color:var(--lb-gold-dark);box-shadow:inset 0 0 10px rgba(255,215,0,.2)}}
+@keyframes toastSlideUp{0%{transform:translateX(-50%) translateY(50px);opacity:0}15%{transform:translateX(-50%) translateY(0);opacity:1}85%{transform:translateX(-50%) translateY(0);opacity:1}100%{transform:translateX(-50%) translateY(-20px);opacity:0}}
+@keyframes sparkle{0%,100%{opacity:1;transform:scale(1) rotate(0)}50%{opacity:.5;transform:scale(1.3) rotate(180deg)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes tikkiCelebrate{0%{transform:scale(1) rotate(0)}25%{transform:scale(1.3) rotate(-15deg)}50%{transform:scale(1.3) rotate(15deg)}75%{transform:scale(1.2) rotate(-10deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes confettiFall{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+@keyframes twinkle{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes cloudDrift{0%{transform:translateX(-100px)}100%{transform:translateX(calc(100vw + 100px))}}
+@keyframes starBurst{0%{transform:scale(0);opacity:1}100%{transform:scale(2);opacity:0}}
+
+.map-station{animation:popIn .4s ease backwards}
+.map-station:nth-child(1){animation-delay:.1s}.map-station:nth-child(2){animation-delay:.2s}.map-station:nth-child(3){animation-delay:.3s}.map-station:nth-child(4){animation-delay:.4s}
+.shop-item{animation:popIn .3s ease backwards}
+.shop-item:nth-child(1){animation-delay:.03s}.shop-item:nth-child(2){animation-delay:.06s}.shop-item:nth-child(3){animation-delay:.09s}.shop-item:nth-child(4){animation-delay:.12s}.shop-item:nth-child(5){animation-delay:.15s}.shop-item:nth-child(6){animation-delay:.18s}.shop-item:nth-child(7){animation-delay:.21s}.shop-item:nth-child(8){animation-delay:.24s}.shop-item:nth-child(9){animation-delay:.27s}.shop-item:nth-child(10){animation-delay:.3s}.shop-item:nth-child(11){animation-delay:.33s}.shop-item:nth-child(12){animation-delay:.36s}
+
+/* Star burst on correct */
+.star-burst{position:absolute;pointer-events:none;font-size:1.5rem;animation:starBurst .6s ease-out forwards}
+
+/* Level badge */
+.level-badge{background:linear-gradient(135deg,var(--lb-gold),var(--lb-gold-dark));color:var(--lb-black);font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:var(--radius-sm);margin-inline-start:6px}
+
+/* XP bar */
+.map-xp-bar{display:flex;align-items:center;gap:var(--gap-sm);padding:4px 16px;background:#fff}
+.xp-track{flex:1;height:8px;background:var(--lb-cream-dark);border-radius:4px;overflow:hidden}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--lb-gold),var(--lb-gold-dark));border-radius:4px;transition:width .5s ease;width:0%}
+.xp-text{font-size:.7rem;font-weight:600;color:var(--lb-gold-dark);min-width:60px;text-align:center}
+
+/* Shop category tabs */
+.shop-tabs{display:flex;gap:var(--gap-sm);padding:var(--gap-sm) var(--gap-md);overflow-x:auto;flex-shrink:0}
+.shop-tab{padding:6px 16px;font-size:.85rem;font-weight:600;font-family:inherit;border:2px solid var(--lb-pink);border-radius:var(--radius-md);background:#fff;color:var(--lb-black-light);cursor:pointer;white-space:nowrap;transition:all .2s}
+.shop-tab.active{background:var(--lb-red);color:#fff;border-color:var(--lb-red)}
+
+/* Coin bounce on header */
+@keyframes coinBounce{0%{transform:scale(1)}30%{transform:scale(1.4)}60%{transform:scale(.9)}100%{transform:scale(1)}}
+.coin-bounce{animation:coinBounce .4s ease}
+
+/* +1 floating label */
+.plus-one{position:absolute;font-size:1.2rem;font-weight:800;color:var(--lb-gold);pointer-events:none;animation:plusOneFloat 1s ease-out forwards;z-index:60}
+@keyframes plusOneFloat{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-60px)}}
+
+/* Unlock celebration */
+.unlock-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,var(--lb-gold),var(--lb-gold-dark));color:var(--lb-black);padding:20px 32px;border-radius:var(--radius-lg);font-size:1.3rem;font-weight:700;z-index:300;box-shadow:var(--shadow-lg);text-align:center;animation:bounceIn .5s ease}
+.unlock-toast span{display:block;font-size:2rem;margin-bottom:8px}
+
+/* Num buttons grid improved */
+.number-buttons{display:grid!important;grid-template-columns:repeat(4,1fr);gap:10px;max-width:300px;padding:var(--gap-md)}
+.num-btn{width:auto;height:64px;font-size:1.5rem;border-radius:var(--radius-lg);box-shadow:0 3px 8px rgba(0,0,0,.1)}
+/* Colorful number buttons */
+.num-btn:nth-child(8n+1){border-color:#F48FB1;background:#FFF0F3}
+.num-btn:nth-child(8n+2){border-color:#CE93D8;background:#F3E5F5}
+.num-btn:nth-child(8n+3){border-color:#90CAF9;background:#E3F2FD}
+.num-btn:nth-child(8n+4){border-color:#80CBC4;background:#E0F2F1}
+.num-btn:nth-child(8n+5){border-color:#A5D6A7;background:#E8F5E9}
+.num-btn:nth-child(8n+6){border-color:#FFE082;background:#FFF8E1}
+.num-btn:nth-child(8n+7){border-color:#FFAB91;background:#FBE9E7}
+.num-btn:nth-child(8n+8){border-color:#B0BEC5;background:#ECEFF1}
+
+/* === ACHIEVEMENTS === */
+.achievements-btn{position:fixed;top:60px;left:12px;z-index:80;padding:6px 12px;font-size:.8rem;font-weight:700;font-family:inherit;background:linear-gradient(135deg,var(--lb-gold),var(--lb-gold-dark));color:var(--lb-black);border:none;border-radius:var(--radius-md);cursor:pointer;box-shadow:var(--shadow-sm);display:none;transition:transform .1s}
+.achievements-btn:active{transform:scale(.9)}
+.badge-count{background:var(--lb-red);color:#fff;font-size:.65rem;padding:1px 5px;border-radius:10px;margin-inline-start:4px}
+.achievements-panel{position:fixed;inset:0;z-index:150;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:var(--gap-md)}
+.achievements-panel.active{display:flex}
+.achievements-card{background:#fff;border-radius:var(--radius-lg);padding:var(--gap-lg);max-width:400px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
+.achievements-card h2{text-align:center;margin-bottom:var(--gap-md);font-size:1.3rem}
+.badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap-md)}
+.badge{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;background:var(--lb-cream);border-radius:var(--radius-md);border:2px solid var(--lb-cream-dark);text-align:center;transition:transform .2s}
+.badge.earned{border-color:var(--lb-gold);background:linear-gradient(135deg,rgba(255,215,0,.1),rgba(255,215,0,.05));box-shadow:var(--shadow-glow-gold)}
+.badge.earned .badge-icon{animation:pulse 2s infinite}
+.badge:not(.earned){opacity:.4;filter:grayscale(.8)}
+.badge-icon{font-size:2rem}
+.badge-name{font-size:.7rem;font-weight:700;color:var(--lb-black)}
+.badge-desc{font-size:.6rem;color:var(--lb-black-light)}
+.close-achievements{position:absolute;top:12px;left:12px;font-size:1.5rem;background:none;border:none;cursor:pointer;color:var(--lb-black-light)}
+
+/* === DAILY CHALLENGE === */
+.daily-challenge{background:linear-gradient(135deg,#FFD700 0%,#FFA000 50%,#FF8F00 100%);border-radius:var(--radius-lg);padding:14px 18px;margin:var(--gap-sm) var(--gap-md);display:flex;align-items:center;gap:var(--gap-md);cursor:pointer;box-shadow:0 4px 16px rgba(255,160,0,.3);transition:transform .15s;border:3px solid rgba(255,255,255,.4);position:relative;overflow:hidden}
+.daily-challenge::before{content:'';position:absolute;inset:0;background:linear-gradient(45deg,transparent 40%,rgba(255,255,255,.15) 50%,transparent 60%);animation:shimmer 3s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.daily-challenge:active{transform:scale(.97)}
+.daily-challenge.completed{background:var(--lb-green);opacity:.7;cursor:default}
+.daily-icon{font-size:1.8rem;animation:pulse 2s infinite}
+.daily-text{flex:1}
+.daily-text h3{font-size:1rem;color:var(--lb-black);margin-bottom:2px}
+.daily-text p{font-size:.8rem;color:rgba(0,0,0,.6)}
+.daily-reward{font-size:.9rem;font-weight:700;background:rgba(255,255,255,.3);padding:4px 10px;border-radius:var(--radius-sm);white-space:nowrap}
+
+/* === FIREWORKS === */
+.firework{position:fixed;pointer-events:none;z-index:250}
+.firework-particle{position:absolute;width:4px;height:4px;border-radius:50%;animation:fireworkBurst 1s ease-out forwards}
+@keyframes fireworkBurst{0%{transform:translate(0,0) scale(1);opacity:1}100%{opacity:0}}
+@keyframes fireworkRise{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-200px);opacity:0}}
+
+/* === SCREEN BACKGROUND GLOW === */
+.correct-flash{animation:correctFlash .3s ease}
+@keyframes correctFlash{0%{background-color:rgba(76,175,80,.15)}100%{background-color:transparent}}
+.wrong-flash{animation:wrongFlash .3s ease}
+@keyframes wrongFlash{0%{background-color:rgba(255,82,82,.1)}100%{background-color:transparent}}
+
+/* === PROGRESS DOTS (exercise) === */
+.progress-dots{display:flex;gap:4px;justify-content:center;padding:4px var(--gap-md)}
+.progress-dot{width:10px;height:10px;border-radius:50%;background:var(--lb-cream-dark);transition:all .3s}
+.progress-dot.correct{background:var(--correct);box-shadow:0 0 4px rgba(76,175,80,.5)}
+.progress-dot.wrong{background:var(--wrong)}
+.progress-dot.current{background:var(--lb-pink);transform:scale(1.3)}
+
+/* === HEARTS SYSTEM === */
+.hearts-display{display:flex;gap:2px;align-items:center}
+.heart{font-size:1.1rem;transition:transform .3s,opacity .3s,filter .3s}
+.heart.lost{filter:grayscale(1);opacity:.3;transform:scale(.8)}
+.heart.breaking{animation:heartBreak .5s ease}
+@keyframes heartBreak{0%{transform:scale(1)}30%{transform:scale(1.3)}60%{transform:scale(.5);opacity:.5}100%{transform:scale(.8);opacity:.3;filter:grayscale(1)}}
+.hearts-regen{font-size:.6rem;color:var(--lb-black-light);text-align:center}
+.no-hearts-overlay{position:fixed;inset:0;z-index:160;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:var(--gap-md)}
+.no-hearts-card{background:#fff;border-radius:var(--radius-lg);padding:var(--gap-xl);text-align:center;max-width:320px;box-shadow:var(--shadow-lg)}
+.no-hearts-card h2{margin:var(--gap-md) 0}
+.no-hearts-card .big-emoji{font-size:3.5rem;display:block;margin-bottom:var(--gap-sm)}
+.timer-text{font-size:1.3rem;font-weight:700;color:var(--lb-red);margin:var(--gap-md) 0}
+
+/* === COMBO MULTIPLIER === */
+.combo-display{position:fixed;top:100px;left:50%;transform:translateX(-50%);z-index:70;background:linear-gradient(135deg,var(--lb-red),#FF6B35);color:#fff;padding:6px 18px;border-radius:var(--radius-lg);font-size:1.1rem;font-weight:800;box-shadow:var(--shadow-md);opacity:0;transition:opacity .3s,transform .3s;pointer-events:none}
+.combo-display.show{opacity:1;transform:translateX(-50%) scale(1)}
+.combo-display.hide{opacity:0;transform:translateX(-50%) scale(.5)}
+.combo-x2{background:linear-gradient(135deg,#4CAF50,#2E7D32)}
+.combo-x3{background:linear-gradient(135deg,var(--lb-gold),#FF6B35);animation:comboPulse .5s infinite alternate}
+.combo-x4{background:linear-gradient(135deg,#E43B3B,#FF6B35,var(--lb-gold),#4CAF50,#4FC3F7);background-size:200%;animation:comboRainbow 1s linear infinite}
+@keyframes comboPulse{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(1.1)}}
+@keyframes comboRainbow{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+
+/* === STORY INTRO === */
+.story-overlay{position:fixed;inset:0;z-index:160;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:var(--gap-md);animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.story-card{background:#fff;border-radius:var(--radius-lg);padding:var(--gap-xl);max-width:380px;width:100%;text-align:center;box-shadow:var(--shadow-lg);animation:bounceIn .5s}
+.story-character{font-size:4rem;margin-bottom:var(--gap-md);animation:bob 2s infinite ease-in-out}
+.story-text{font-size:1.1rem;line-height:1.6;margin-bottom:var(--gap-lg);color:var(--lb-black)}
+.story-text strong{color:var(--lb-red)}
+
+/* === STREAK CALENDAR === */
+.streak-section{padding:0 var(--gap-md) var(--gap-md)}
+.streak-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--gap-sm)}
+.streak-header h3{font-size:.95rem}
+.streak-fire{font-size:1.1rem;font-weight:700;color:var(--lb-red)}
+.streak-grid{display:flex;gap:3px;justify-content:center}
+.streak-day{width:28px;height:28px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:600;background:var(--lb-cream-dark);color:var(--lb-black-light)}
+.streak-day.played{background:var(--lb-green);color:#fff}
+.streak-day.today{border:2px solid var(--lb-red);font-weight:800}
+.streak-day.today.played{background:var(--lb-red);border-color:var(--lb-red-dark)}
+
+/* === REWARD WHEEL === */
+.wheel-overlay{position:fixed;inset:0;z-index:170;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;animation:fadeIn .3s}
+.wheel-card{background:#fff;border-radius:var(--radius-lg);padding:var(--gap-xl);text-align:center;max-width:340px;width:100%;box-shadow:var(--shadow-lg)}
+.wheel-card h2{margin-bottom:var(--gap-md)}
+.wheel-container{position:relative;width:220px;height:220px;margin:0 auto var(--gap-lg)}
+.wheel-circle{width:220px;height:220px;border-radius:50%;border:4px solid var(--lb-red);position:relative;overflow:hidden;transition:transform 3s cubic-bezier(.17,.67,.12,.99)}
+.wheel-segment{position:absolute;width:50%;height:50%;transform-origin:100% 100%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700}
+.wheel-pointer{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:1.5rem;z-index:2;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
+.wheel-result{font-size:1.5rem;font-weight:800;color:var(--lb-red);min-height:40px;margin-bottom:var(--gap-md)}
+
+/* === POWER-UPS === */
+.powerups-bar{display:flex;gap:var(--gap-sm);justify-content:center;padding:4px var(--gap-md);flex-shrink:0}
+.powerup-btn{display:flex;align-items:center;gap:4px;padding:5px 12px;font-size:.75rem;font-weight:600;font-family:inherit;background:#fff;border:2px solid var(--lb-pink);border-radius:var(--radius-md);cursor:pointer;transition:transform .1s,box-shadow .15s;position:relative}
+.powerup-btn:active{transform:scale(.9)}
+.powerup-btn:disabled{opacity:.35;cursor:default}
+.powerup-btn .pu-icon{font-size:1.1rem}
+.powerup-btn .pu-count{background:var(--lb-red);color:#fff;font-size:.6rem;padding:1px 4px;border-radius:8px;min-width:14px;text-align:center}
+.powerup-btn:not(:disabled):hover{border-color:var(--lb-gold);box-shadow:var(--shadow-glow-gold)}
+
+/* === JELLY BUTTONS === */
+.num-btn{transition:transform .15s cubic-bezier(.68,-.55,.265,1.55),background .15s,border-color .15s}
+.num-btn:active{transform:scale(.82)!important}
+.num-btn.jelly{animation:jelly .5s ease}
+@keyframes jelly{0%{transform:scale(1)}30%{transform:scale(1.15,0.85)}40%{transform:scale(0.85,1.15)}50%{transform:scale(1.05,0.95)}65%{transform:scale(0.97,1.03)}75%{transform:scale(1.02,0.98)}100%{transform:scale(1)}}
+
+/* === SLIDE TRANSITION === */
+.exercise-content{transition:opacity .25s,transform .25s}
+.exercise-content.slide-out{opacity:0;transform:translateX(-40px)}
+.exercise-content.slide-in{opacity:0;transform:translateX(40px)}
+
+/* === SPEED ROUND === */
+.speed-banner{background:linear-gradient(135deg,#FF6B35,var(--lb-red));color:#fff;padding:8px 16px;border-radius:var(--radius-md);font-weight:700;font-size:.9rem;display:flex;align-items:center;gap:var(--gap-sm);animation:pulse 1s infinite}
+.speed-timer{font-size:1.3rem;font-weight:800;font-variant-numeric:tabular-nums;min-width:40px;text-align:center}
+
+/* === BUTTON RIPPLE === */
+.num-btn{position:relative;overflow:hidden}
+.ripple{position:absolute;border-radius:50%;background:rgba(228,59,59,.3);transform:scale(0);animation:rippleOut .5s ease-out forwards;pointer-events:none}
+@keyframes rippleOut{to{transform:scale(4);opacity:0}}
+
+/* === RAINBOW BORDER ON HIGH STREAK === */
+.rainbow-border{border-image:linear-gradient(135deg,#E43B3B,#FF9800,#FFD700,#4CAF50,#4FC3F7,#CE93D8) 1;border-width:3px;border-style:solid}
+
+/* Mobile tweaks */
+@media(max-width:400px){
+    .num-btn{width:48px;height:48px;font-size:1.1rem}
+    .shop-grid{grid-template-columns:repeat(2,1fr)}
+    .welcome-logo h1{font-size:1.8rem}
+    .compare-btn{padding:12px 18px;min-width:70px}
+}
+    </style>
+</head>
+<body>
+    <!-- Splash screen -->
+    <div id="splash" style="position:fixed;inset:0;z-index:999;background:linear-gradient(135deg,#1A1A2E,#E43B3B);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s">
+        <div style="font-size:5rem;animation:pulse 1s infinite">🐞</div>
+        <div style="color:#fff;font-family:'Rubik',sans-serif;font-size:1.2rem;font-weight:700;margin-top:16px;opacity:.8">...טוען</div>
+    </div>
+
+    <!-- Tikki mascot -->
+    <div class="tikki" id="tikki"><img class="tikki-img" src="assets/images/characters/tikki.png" alt="🔴" onerror="this.parentElement.textContent='🔴'"></div>
+    <div class="tikki-bubble" id="tikki-bubble"></div>
+    <!-- Sound toggle -->
+    <button class="sound-toggle" id="sound-toggle">🔊</button>
+    <!-- Combo display -->
+    <div class="combo-display" id="combo-display">x2</div>
+    <!-- Achievements button -->
+    <button class="achievements-btn" id="achievements-btn">🏆 הישגים <span class="badge-count" id="badge-count">0</span></button>
+    <!-- Achievements panel -->
+    <div class="achievements-panel" id="achievements-panel">
+        <div class="achievements-card" style="position:relative">
+            <button class="close-achievements" id="close-achievements">✕</button>
+            <h2>🏆 ההישגים שלי</h2>
+            <div class="badge-grid" id="badge-grid"></div>
+        </div>
+    </div>
+
+    <!-- WELCOME -->
+    <section id="screen-welcome" class="screen">
+        <div class="welcome-bg">
+            <div class="welcome-stars" id="welcome-stars"></div>
+            <div class="floating-ladybugs">
+                <span class="float-lb" style="--delay:0s;--x:10%">🐞</span>
+                <span class="float-lb" style="--delay:1.2s;--x:25%">🦋</span>
+                <span class="float-lb" style="--delay:2.4s;--x:55%">🐞</span>
+                <span class="float-lb" style="--delay:.6s;--x:75%">⭐</span>
+                <span class="float-lb" style="--delay:1.8s;--x:42%">🐞</span>
+                <span class="float-lb" style="--delay:3s;--x:88%">🦋</span>
+            </div>
+            <div class="welcome-content">
+                <div class="welcome-logo">
+                    <img class="welcome-character" src="assets/images/characters/ladybug.png" alt="🐞" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                    <span class="logo-ladybug" style="display:none">🐞</span>
+                    <h1>החיפושית המופלאה</h1>
+                    <h2>✨ משחק חשבון ✨</h2>
+                </div>
+                <div id="welcome-new">
+                    <p class="welcome-text">שלום גיבורת על! איך קוראים לך?</p>
+                    <input type="text" id="player-name" placeholder="הכניסו את השם שלכם..." autocomplete="off" maxlength="20">
+                    <button id="start-btn" class="btn-hero">🐞 בואו נשחק!</button>
+                </div>
+                <div id="welcome-back" style="display:none">
+                    <p class="welcome-text">שלום <span id="welcome-name"></span>! 🌟</p>
+                    <p class="welcome-sub">מוכנים להמשיך?</p>
+                    <button id="continue-btn" class="btn-hero">🎮 המשיכו לשחק!</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAP -->
+    <section id="screen-map" class="screen">
+        <div class="map-bg-img" style="background-image:url('assets/images/backgrounds/map.png')"></div>
+        <div class="map-header">
+            <div class="header-right"><span class="player-avatar">🐞</span><span id="map-player-name" class="player-name"></span><span class="level-badge" id="level-badge">רמה 1</span></div>
+            <div class="header-left"><span class="coin-icon">🪙</span><span id="map-coins" class="global-coins coin-count">0</span></div>
+        </div>
+        <div class="map-xp-bar"><div class="xp-track"><div id="xp-fill" class="xp-fill"></div></div><span id="xp-text" class="xp-text"></span></div>
+        <div class="map-title"><h2>🏠 המאפייה של מרינט</h2><p>בחרו תחנה להתאמן!</p></div>
+        <div class="daily-challenge" id="daily-challenge">
+            <span class="daily-icon">⚡</span>
+            <div class="daily-text"><h3>אתגר יומי!</h3><p id="daily-desc">פתרו 5 תרגילים מעורבים</p></div>
+            <span class="daily-reward" id="daily-reward">🪙×5</span>
+        </div>
+        <div class="map-grid">
+            <div class="map-station" data-type="counting"><div class="station-icon">🔢</div><div class="station-name">ספירה</div><div class="station-stars">☆☆☆</div><div class="lock-icon" style="display:none">🔒</div></div>
+            <div class="map-station" data-type="addition"><div class="station-icon">➕</div><div class="station-name">חיבור</div><div class="station-stars">☆☆☆</div><div class="lock-icon" style="display:none">🔒</div></div>
+            <div class="map-station" data-type="subtraction"><div class="station-icon">➖</div><div class="station-name">חיסור</div><div class="station-stars">☆☆☆</div><div class="lock-icon">🔒</div></div>
+            <div class="map-station" data-type="comparison"><div class="station-icon">⚖️</div><div class="station-name">גדול או קטן</div><div class="station-stars">☆☆☆</div><div class="lock-icon">🔒</div></div>
+        </div>
+        <div class="streak-section" id="streak-section">
+            <div class="streak-header"><h3>📅 השבוע שלי</h3><span class="streak-fire" id="streak-fire"></span></div>
+            <div class="streak-grid" id="streak-grid"></div>
+        </div>
+        <div class="map-bottom-nav">
+            <button id="map-shop-btn" class="map-nav-btn"><span>🛍️</span><span>חנות</span></button>
+            <button id="map-house-btn" class="map-nav-btn"><span>🏠</span><span>הבית שלי</span></button>
+        </div>
+    </section>
+
+    <!-- EXERCISES -->
+    <section id="screen-exercises" class="screen">
+        <div class="exercise-header">
+            <button id="exercise-back-btn" class="back-btn">→ חזרה</button>
+            <span id="exercise-type-title" class="exercise-title"></span>
+            <div class="hearts-display" id="hearts-display"></div>
+            <div class="header-left"><span class="coin-icon">🪙</span><span id="exercise-coins" class="global-coins coin-count">0</span></div>
+        </div>
+        <div class="exercise-progress">
+            <div class="progress-track"><div id="exercise-progress-bar" class="progress-fill"></div></div>
+            <span id="exercise-progress-text" class="progress-text">1 / 10</span>
+        </div>
+        <div class="powerups-bar" id="powerups-bar">
+            <button class="powerup-btn" id="pu-skip" title="דלג על השאלה"><span class="pu-icon">⏭️</span>דלג<span class="pu-count" id="pu-skip-count">1</span></button>
+            <button class="powerup-btn" id="pu-hint" title="רמז — הסר תשובות שגויות"><span class="pu-icon">💡</span>רמז<span class="pu-count" id="pu-hint-count">2</span></button>
+            <button class="powerup-btn" id="pu-double" title="מטבעות כפולים בשאלה הבאה"><span class="pu-icon">✨</span>כפול<span class="pu-count" id="pu-double-count">1</span></button>
+        </div>
+        <div class="progress-dots" id="progress-dots"></div>
+        <div class="streak-indicator" id="streak-indicator">🔥 <span id="streak-count">0</span></div>
+        <div id="exercise-content" class="exercise-content"></div>
+        <div id="exercise-feedback" class="exercise-feedback"></div>
+        <img class="exercise-character" src="assets/images/characters/ladybug.png" alt="" onerror="this.style.display='none'">
+    </section>
+
+    <!-- SHOP -->
+    <section id="screen-shop" class="screen">
+        <div class="shop-header">
+            <button id="shop-back-btn" class="back-btn">→ חזרה</button>
+            <h2 class="shop-title">🛍️ החנות של טיקי</h2>
+            <div class="header-left"><span class="coin-icon">🪙</span><span id="shop-coins" class="global-coins coin-count">0</span></div>
+        </div>
+        <div class="shop-bg-img" style="background-image:url('assets/images/backgrounds/shop.png')"></div>
+        <div class="shop-tabs" id="shop-tabs">
+            <button class="shop-tab active" data-cat="all">הכל</button>
+            <button class="shop-tab" data-cat="bakery">🥐 מאפייה</button>
+            <button class="shop-tab" data-cat="furniture">🪑 רהיטים</button>
+            <button class="shop-tab" data-cat="decoration">🎨 קישוט</button>
+        </div>
+        <div id="shop-grid" class="shop-grid"></div>
+        <div id="shop-modal" class="modal-overlay"><div id="shop-modal-content" class="modal-content"></div></div>
+    </section>
+
+    <!-- HOUSE -->
+    <section id="screen-house" class="screen">
+        <div class="house-header">
+            <button id="house-back-btn" class="back-btn">→ חזרה</button>
+            <h2 class="house-title">🏠 הבית של מרינט</h2>
+            <div class="header-left"><span class="coin-icon">🪙</span><span id="house-coins" class="global-coins coin-count">0</span></div>
+        </div>
+        <div class="house-view">
+            <div class="bakery-bg">
+                <div class="bakery-sign">🥐 המאפייה של דופיין-צ'נג 🥐</div>
+                <div id="house-slots" class="house-slots"></div>
+            </div>
+        </div>
+        <div class="house-tray">
+            <h3>📦 הפריטים שלי</h3>
+            <div id="house-inventory" class="house-inventory"></div>
+        </div>
+    </section>
+
+<script>
+(function(){
+'use strict';
+
+// ===== STORAGE =====
+const SK='ladybug_math_state';
+function load(){try{const r=localStorage.getItem(SK);return r?JSON.parse(r):null}catch{return null}}
+function save(s){try{localStorage.setItem(SK,JSON.stringify(s))}catch{}}
+
+// ===== STATE =====
+const DEF={player:{name:'',coins:0,totalCoinsEarned:0,stars:0},progress:{counting:{completed:0,bestStreak:0,unlocked:true},addition:{completed:0,bestStreak:0,unlocked:true},subtraction:{completed:0,bestStreak:0,unlocked:false},comparison:{completed:0,bestStreak:0,unlocked:false}},shop:{purchasedItems:[]},house:{placedItems:{}},session:{currentStreak:0,currentExerciseType:null,currentRound:0,roundsPerSession:10,sessionCoins:0},settings:{soundEnabled:true}};
+let S=null;const L=[];
+function initState(){const sv=load();S=sv?{...DEF,...sv}:structuredClone(DEF);S.progress={...DEF.progress,...S.progress};S.session={...DEF.session};S.settings=S.settings||{soundEnabled:true};notify()}
+function G(){return S}
+function U(p,v){const k=p.split('.');let o=S;for(let i=0;i<k.length-1;i++)o=o[k[i]];o[k[k.length-1]]=v;save(S);notify()}
+function addCoins(n){S.player.coins+=n;S.player.totalCoinsEarned+=n;S.session.sessionCoins+=n;save(S);notify()}
+function spendCoins(n){if(S.player.coins>=n){S.player.coins-=n;save(S);notify();return true}return false}
+function purchaseItem(id){if(!S.shop.purchasedItems.includes(id)){S.shop.purchasedItems.push(id);save(S);notify()}}
+function placeItem(sl,id){S.house.placedItems[sl]=id;save(S);notify()}
+function removeItem(sl){delete S.house.placedItems[sl];save(S);notify()}
+function checkUnlocks(){
+    let unlocked=null;
+    if(S.progress.addition.completed>=10&&!S.progress.subtraction.unlocked){S.progress.subtraction.unlocked=true;unlocked='חיסור ➖'}
+    if(S.progress.subtraction.completed>=10&&!S.progress.comparison.unlocked){S.progress.comparison.unlocked=true;unlocked='גדול או קטן ⚖️'}
+    save(S);notify();
+    if(unlocked){showConfetti(40);showUnlockToast(unlocked)}
+}
+function showUnlockToast(name){
+    const t=document.createElement('div');t.className='unlock-toast';
+    t.innerHTML=`<span>🔓</span>נפתח: ${name}!`;
+    document.body.appendChild(t);setTimeout(()=>t.remove(),3000);
+}
+function subscribe(fn){L.push(fn)}
+function notify(){L.forEach(fn=>fn(S))}
+function resetSession(){S.session={...DEF.session}}
+
+// ===== AUDIO =====
+let ac=null,soundOn=true;
+function getAC(){if(!ac)ac=new(window.AudioContext||window.webkitAudioContext)();return ac}
+function resumeAudio(){const c=getAC();if(c.state==='suspended')c.resume()}
+function tone(f,d,t,v){if(!soundOn)return;const c=getAC(),o=c.createOscillator(),g=c.createGain();o.type=t||'sine';o.frequency.value=f;g.gain.setValueAtTime(v||.3,c.currentTime);g.gain.exponentialRampToValueAtTime(.01,c.currentTime+d);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+d)}
+function playCorrect(){if(!soundOn)return;const c=getAC(),t=c.currentTime;[523,659,784].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.25,t+i*.1);g.gain.exponentialRampToValueAtTime(.01,t+i*.1+.3);o.connect(g);g.connect(c.destination);o.start(t+i*.1);o.stop(t+i*.1+.3)})}
+function playWrong(){tone(200,.4,'triangle',.2)}
+function playPurchase(){if(!soundOn)return;const c=getAC(),t=c.currentTime;[440,554,659,880].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.2,t+i*.12);g.gain.exponentialRampToValueAtTime(.01,t+i*.12+.25);o.connect(g);g.connect(c.destination);o.start(t+i*.12);o.stop(t+i*.12+.25)})}
+function playLevelUp(){if(!soundOn)return;const c=getAC(),t=c.currentTime;[523,659,784,1047].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.3,t+i*.15);g.gain.exponentialRampToValueAtTime(.01,t+i*.15+.4);o.connect(g);g.connect(c.destination);o.start(t+i*.15);o.stop(t+i*.15+.4)})}
+function playClick(){tone(800,.08,'sine',.15)}
+
+// ===== TIKKI MASCOT =====
+const TIKKI_TIPS=['את/ה יכול/ה!','ספרו לאט 🐞','אפשר לספור שוב','כמעט! נסו שוב','מעולה! המשיכו כך','קנו משהו יפה לבית!'];
+const TIKKI_CORRECT=['יופי!','נהדר! 🌟','מדהים!','כל הכבוד!','מצוין!','וואו!'];
+function tikkiSay(msg,dur){
+    const b=document.getElementById('tikki-bubble');
+    b.textContent=msg;b.classList.add('show');
+    setTimeout(()=>b.classList.remove('show'),dur||2500);
+}
+function tikkiCelebrate(){
+    const t=document.getElementById('tikki');
+    t.classList.add('celebrate');
+    setTimeout(()=>t.classList.remove('celebrate'),600);
+    tikkiSay(TIKKI_CORRECT[rand(0,TIKKI_CORRECT.length-1)],1500);
+}
+
+// ===== CONFETTI =====
+function showConfetti(count){
+    const c=document.createElement('div');c.className='confetti-container';
+    const colors=['#E43B3B','#FFD700','#4CAF50','#FFB6C1','#4FC3F7','#CE93D8'];
+    for(let i=0;i<(count||30);i++){
+        const p=document.createElement('div');p.className='confetti';
+        p.style.left=rand(0,100)+'%';p.style.background=colors[rand(0,colors.length-1)];
+        p.style.animationDelay=(rand(0,20)/10)+'s';p.style.animationDuration=(rand(20,35)/10)+'s';
+        p.style.width=rand(6,12)+'px';p.style.height=rand(6,12)+'px';
+        c.appendChild(p);
+    }
+    document.body.appendChild(c);setTimeout(()=>c.remove(),4000);
+}
+
+// ===== MATH ENGINE =====
+const OBJS=['🐞','🍪','⭐','🌸','🦋','🍰','🎀','❤️'];
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function maxLvl(c){return c<20?10:c<40?15:20}
+function genProblem(type,comp){
+    const mx=maxLvl(comp||0);
+    if(type==='counting'){const n=rand(1,Math.min(mx,10)),o=OBJS[rand(0,OBJS.length-1)];return{type:'counting',question:'כמה יש פה?',answer:n,visual:{type:'objects',items:Array(n).fill(o)},inputType:'number-buttons',maxInput:10}}
+    if(type==='addition'){const a=rand(1,mx-1),b=rand(1,mx-a);return{type:'addition',question:`${a} + ${b} = ?`,answer:a+b,visual:{type:'groups',groupA:Array(a).fill('🐞'),groupB:Array(b).fill('🐞'),operator:'+'},inputType:'number-buttons',maxInput:20}}
+    if(type==='subtraction'){const a=rand(2,mx),b=rand(1,a);return{type:'subtraction',question:`${a} - ${b} = ?`,answer:a-b,visual:{type:'groups',groupA:Array(a).fill('🍪'),crossed:b,operator:'-'},inputType:'number-buttons',maxInput:20}}
+    if(type==='comparison'){let a=rand(1,mx),b=rand(1,mx);if(a===b&&Math.random()>.3)b=Math.max(1,Math.min(mx,a+(Math.random()>.5?1:-1)));return{type:'comparison',question:`${a}  __  ${b}`,questionParts:{left:a,right:b},answer:a>b?'>':a<b?'<':'=',visual:{type:'comparison',leftCount:a,rightCount:b},inputType:'comparison-buttons'}}
+    if(type==='daily'&&window._dailyTypes){
+        const dt=window._dailyTypes;
+        return genProblem(dt[rand(0,dt.length-1)],comp);
+    }
+    return genProblem('addition',comp);
+}
+
+// Smart number range — 8 options centered on answer, always includes correct
+function smartRange(answer,maxInput){
+    const count=8;
+    const lo=Math.max(0,answer-Math.floor(count/2));
+    const hi=Math.min(maxInput,lo+count-1);
+    const start=Math.max(0,hi-count+1);
+    const nums=[];
+    for(let i=start;i<=hi;i++) nums.push(i);
+    // Ensure answer is included
+    if(!nums.includes(answer)){nums.pop();nums.push(answer)}
+    nums.sort((a,b)=>a-b);
+    return nums;
+}
+
+// ===== SHOP CATALOG =====
+const CATALOG=[
+    {id:'oven',name:'תנור',price:5,emoji:'🔥',category:'bakery',slot:'kitchen'},
+    {id:'cake',name:'עוגה',price:3,emoji:'🎂',category:'bakery',slot:'counter'},
+    {id:'cookies',name:'עוגיות',price:4,emoji:'🍪',category:'bakery',slot:'counter'},
+    {id:'mixer',name:'מיקסר',price:7,emoji:'🍰',category:'bakery',slot:'counter'},
+    {id:'table',name:'שולחן',price:8,emoji:'🪑',category:'furniture',slot:'dining'},
+    {id:'chair',name:'כיסא',price:6,emoji:'💺',category:'furniture',slot:'dining'},
+    {id:'lamp',name:'מנורה',price:5,emoji:'💡',category:'decoration',slot:'living'},
+    {id:'flowers',name:'פרחים',price:4,emoji:'💐',category:'decoration',slot:'window'},
+    {id:'painting',name:'תמונה',price:10,emoji:'🖼️',category:'decoration',slot:'wall'},
+    {id:'cushion',name:'כרית',price:12,emoji:'❤️',category:'decoration',slot:'sofa'},
+    {id:'curtains',name:'וילונות',price:10,emoji:'🪟',category:'decoration',slot:'window'},
+    {id:'rug',name:'שטיח',price:15,emoji:'🟥',category:'decoration',slot:'floor'},
+];
+const SLOTS=[
+    {id:'kitchen-1',label:'מטבח',x:8,y:25,w:18,h:22,accepts:'bakery'},
+    {id:'counter-1',label:'דלפק',x:28,y:30,w:16,h:18,accepts:'bakery'},
+    {id:'counter-2',label:'דלפק',x:46,y:30,w:16,h:18,accepts:'bakery'},
+    {id:'dining-1',label:'שולחן',x:64,y:35,w:16,h:20,accepts:'furniture'},
+    {id:'dining-2',label:'כיסא',x:82,y:35,w:12,h:20,accepts:'furniture'},
+    {id:'wall-1',label:'קיר',x:12,y:5,w:14,h:14,accepts:'decoration'},
+    {id:'wall-2',label:'קיר',x:52,y:5,w:14,h:14,accepts:'decoration'},
+    {id:'window-1',label:'חלון',x:32,y:2,w:16,h:16,accepts:'decoration'},
+    {id:'sofa-1',label:'ספה',x:66,y:60,w:22,h:16,accepts:'decoration'},
+    {id:'floor-1',label:'רצפה',x:28,y:68,w:28,h:12,accepts:'decoration'},
+    {id:'living-1',label:'סלון',x:74,y:8,w:14,h:14,accepts:'decoration'},
+];
+
+// ===== SCREEN ROUTER =====
+function showScreen(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    const t=document.getElementById(id);if(t)t.classList.add('active');
+    // Hide tikki on welcome
+    const isWelcome=id==='screen-welcome';
+    document.getElementById('tikki').style.display=isWelcome?'none':'block';
+    document.getElementById('sound-toggle').style.display=isWelcome?'none':'flex';
+    document.getElementById('achievements-btn').style.display=isWelcome?'none':'block';
+}
+
+// ===== EXERCISES =====
+let curProb=null,attempts=0;
+const CHEERS=['כל הכבוד! 🌟','מדהים! ✨','יופי! 🎉','נהדר! 💪','מצוין! 🏆','אלופ/ה! 🥇'];
+const RETRIES=['נסו שוב! 💪','עוד פעם! 🔄','אפשר לנסות שוב!'];
+
+function startExSession(type){
+    resetSession();roundResults=[];
+    U('session.currentExerciseType',type);U('session.currentRound',0);U('session.sessionCoins',0);U('session.currentStreak',0);
+    showNextProb();
+}
+function showNextProb(){
+    const s=G(),{currentExerciseType:type,currentRound:round,roundsPerSession:total}=s.session;
+    if(round>=total){showComplete();return}
+    // For daily challenge, use counting as the base progress
+    const progType=(type==='daily')?'counting':type;
+    const completed=s.progress[progType]?s.progress[progType].completed:0;
+    curProb=genProblem(type,completed);
+    attempts=0;
+    const bar=document.getElementById('exercise-progress-bar'),txt=document.getElementById('exercise-progress-text');
+    if(bar)bar.style.width=`${(round/total)*100}%`;if(txt)txt.textContent=`${round+1} / ${total}`;
+    renderProgressDots(total,round);
+    updateStreakUI();renderProb(curProb);
+}
+function updateStreakUI(){
+    const si=document.getElementById('streak-indicator'),sc=document.getElementById('streak-count');
+    const streak=G().session.currentStreak;
+    if(streak>=2){si.classList.add('show');sc.textContent=streak}else{si.classList.remove('show')}
+}
+function renderProb(p){
+    const c=document.getElementById('exercise-content'),fb=document.getElementById('exercise-feedback');
+    fb.textContent='';fb.className='exercise-feedback';
+    const names={counting:'ספירה',addition:'חיבור',subtraction:'חיסור',comparison:'גדול או קטן'};
+    document.getElementById('exercise-type-title').textContent=names[p.type]||'';
+    let h='<div class="exercise-visual">';
+    if(p.visual.type==='objects'){
+        h+='<div class="counting-grid">';
+        p.visual.items.forEach((it,i)=>{h+=`<span class="count-item" style="animation-delay:${i*.06}s">${it}</span>`});
+        h+='</div>';
+    }else if(p.visual.type==='groups'){
+        h+='<div class="groups-visual" dir="ltr"><div class="group-a">';
+        p.visual.groupA.forEach((it,i)=>{
+            const cr=p.visual.crossed&&i>=p.visual.groupA.length-p.visual.crossed;
+            h+=`<span class="count-item ${cr?'crossed':''}" style="animation-delay:${i*.04}s">${it}</span>`;
+        });
+        h+='</div>';
+        if(p.visual.groupB){h+=`<span class="operator">${p.visual.operator}</span><div class="group-b">`;p.visual.groupB.forEach((it,i)=>{h+=`<span class="count-item" style="animation-delay:${i*.04}s">${it}</span>`});h+='</div>'}
+        h+='</div>';
+    }else if(p.visual.type==='comparison'){
+        h+='<div class="comparison-visual" dir="ltr">';
+        h+=`<div class="compare-side"><span class="compare-number">${p.questionParts.left}</span><div class="compare-dots">`;
+        for(let i=0;i<Math.min(p.questionParts.left,20);i++)h+='<span class="dot">🐞</span>';
+        h+='</div></div><span class="compare-question">?</span>';
+        h+=`<div class="compare-side"><span class="compare-number">${p.questionParts.right}</span><div class="compare-dots">`;
+        for(let i=0;i<Math.min(p.questionParts.right,20);i++)h+='<span class="dot">🐞</span>';
+        h+='</div></div></div>';
+    }
+    h+='</div>';
+    h+=`<div class="exercise-question" dir="ltr">${p.question}</div><div class="exercise-input">`;
+    if(p.inputType==='number-buttons'){
+        h+='<div class="number-buttons" dir="ltr">';
+        // Smart range: show answer ±4, with some wrong options, shuffled
+        const opts=smartRange(p.answer,p.maxInput||20);
+        opts.forEach(i=>h+=`<button class="num-btn" data-value="${i}">${i}</button>`);
+        h+='</div>';
+    }else if(p.inputType==='comparison-buttons'){
+        h+='<div class="comparison-buttons" dir="ltr">';
+        [['<','קטן מ'],['=','שווה'],['>','גדול מ']].forEach(([op,lb])=>{
+            h+=`<button class="compare-btn" data-value="${op}"><span class="compare-symbol">${op}</span><span class="compare-label">${lb}</span></button>`;
+        });h+='</div>';
+    }
+    h+='</div>';c.innerHTML=h;
+    c.querySelectorAll('.num-btn,.compare-btn').forEach(btn=>{
+        btn.addEventListener('click',(e)=>{addRipple(btn,e);jellyBtn(btn);handleAns(btn.dataset.value)});
+    });
+}
+function handleAns(val){
+    const fb=document.getElementById('exercise-feedback'),s=G();
+    const ans=curProb.type==='comparison'?val:parseInt(val);
+    const ok=ans===curProb.answer||ans===String(curProb.answer);
+    if(ok){
+        playCorrect();tikkiCelebrate();flashScreen('correct');markTodayPlayed();
+        roundResults.push(true);
+        fb.textContent=CHEERS[rand(0,CHEERS.length-1)];fb.className='exercise-feedback correct';
+        const streak=s.session.currentStreak+1;U('session.currentStreak',streak);updateStreakUI();
+        // Combo multiplier + double power-up
+        let mult=getComboMultiplier(streak);
+        if(doubleActive){mult*=2;doubleActive=false;document.getElementById('pu-double').style.cssText=''}
+        addCoins(mult);animateCoin();
+        if(mult>1){const plus=document.querySelector('.plus-one');if(plus)plus.textContent=`+${mult}`}
+        updateComboDisplay(streak);
+        spawnStars();
+        if(streak%3===0){addCoins(1);setTimeout(animateCoin,300);fb.textContent+=' 🌟 בונוס!';showConfetti(15)}
+        if(streak===5){showFireworks(2);tikkiSay('רצף 5! אש! 🔥',2000)}
+        if(streak===10){showFireworks(5);tikkiSay('רצף 10! בלתי ניתן לעצירה! 💥',3000)}
+        const type=s.session.currentExerciseType;
+        // For daily, credit progress to the actual problem type
+        const creditType=(type==='daily')?curProb.type:type;
+        const nc=s.progress[creditType].completed+1;
+        U(`progress.${creditType}.completed`,nc);
+        if(streak>s.progress[creditType].bestStreak)U(`progress.${creditType}.bestStreak`,streak);
+        checkUnlocks();checkBadges(G());
+        U('session.currentRound',s.session.currentRound+1);
+        renderProgressDots(s.session.roundsPerSession,s.session.currentRound+1);
+        disBtns();setTimeout(slideToNext,1000);
+    }else{
+        attempts++;
+        if(attempts>=2){
+            playWrong();flashScreen('wrong');roundResults.push(false);
+            loseHeart();animateHeartBreak(getHearts());
+            fb.textContent=`התשובה הנכונה היא: ${curProb.answer}`;fb.className='exercise-feedback wrong';
+            U('session.currentStreak',0);updateStreakUI();updateComboDisplay(0);
+            const btn=document.querySelector(`[data-value="${curProb.answer}"]`);if(btn)btn.classList.add('correct-btn');
+            U('session.currentRound',s.session.currentRound+1);disBtns();setTimeout(slideToNext,1800);
+            tikkiSay('בפעם הבאה יצליח! 💪',2000);
+        }else{
+            playWrong();fb.textContent=RETRIES[rand(0,RETRIES.length-1)];fb.className='exercise-feedback retry';
+            const cl=document.querySelector(`[data-value="${val}"]`);
+            if(cl){cl.classList.add('shake','wrong-btn');setTimeout(()=>cl.classList.remove('shake'),500)}
+            tikkiSay(TIKKI_TIPS[rand(0,TIKKI_TIPS.length-1)],2000);
+        }
+    }
+}
+function disBtns(){document.querySelectorAll('.num-btn,.compare-btn').forEach(b=>{b.disabled=true})}
+function animateCoin(){
+    const area=document.getElementById('exercise-content');
+    // Flying coin
+    const coin=document.createElement('div');coin.className='flying-coin';coin.textContent='🪙';
+    area.appendChild(coin);setTimeout(()=>coin.remove(),1000);
+    // +1 label
+    const plus=document.createElement('div');plus.className='plus-one';plus.textContent='+1';
+    plus.style.left='55%';plus.style.top='35%';
+    area.appendChild(plus);setTimeout(()=>plus.remove(),1000);
+    // Bounce coin counter
+    const d=document.getElementById('exercise-coins');
+    if(d){d.textContent=G().player.coins;d.classList.add('coin-bounce');setTimeout(()=>d.classList.remove('coin-bounce'),400)}
+}
+function spawnStars(){
+    const area=document.getElementById('exercise-content');
+    for(let i=0;i<5;i++){
+        const s=document.createElement('span');s.className='star-burst';s.textContent='⭐';
+        s.style.left=rand(20,80)+'%';s.style.top=rand(10,50)+'%';s.style.animationDelay=(i*.08)+'s';
+        area.appendChild(s);setTimeout(()=>s.remove(),800);
+    }
+}
+function showComplete(){
+    const s=G(),c=document.getElementById('exercise-content'),coins=s.session.sessionCoins;
+    playLevelUp();showConfetti(50);showFireworks(3);
+    // Check if daily challenge
+    if(s.session.currentExerciseType==='daily'&&!isDailyDone()){completeDailyChallenge()}
+    const seType=s.session.currentExerciseType;
+    const bestStreak=seType==='daily'?s.session.currentStreak:(s.progress[seType]?s.progress[seType].bestStreak:0);
+    c.innerHTML=`<div class="session-complete"><img class="character-img" src="assets/images/characters/ladybug-celebrate.png" alt="🎉" style="width:120px;height:120px" onerror="this.outerHTML='<div class=celebration-emoji>🎉🐞🎉</div>'"><h2>כל הכבוד!</h2><p>${seType==='daily'?'סיימת את האתגר היומי!':'סיימת את כל התרגילים!'}</p><div class="session-stats"><div class="stat-item"><span class="stat-icon">🪙</span><span class="stat-value">${coins}</span><span class="stat-label">מטבעות</span></div><div class="stat-item"><span class="stat-icon">🔥</span><span class="stat-value">${bestStreak}</span><span class="stat-label">רצף שיא</span></div></div><div class="session-buttons"><button class="btn-primary" id="ses-shop">🛍️ לחנות</button><button class="btn-secondary" id="ses-map">🗺️ חזרה למפה</button><button class="btn-accent" id="ses-again">🔄 עוד סבב!</button></div></div>`;
+    document.getElementById('ses-shop').onclick=()=>{playClick();showScreen('screen-shop')};
+    document.getElementById('ses-map').onclick=()=>{playClick();showRewardWheel()};
+    document.getElementById('ses-again').onclick=()=>{playClick();startExSession(s.session.currentExerciseType)};
+    tikkiSay('מדהים! סובבו את הגלגל! 🎰',3000);
+}
+
+// ===== HEARTS SYSTEM =====
+const MAX_HEARTS=5,HEART_REGEN_MS=3*60*1000; // 3 min regen
+function getHearts(){
+    const s=G();
+    if(!s.hearts) s.hearts={count:MAX_HEARTS,lastLost:0};
+    // Regenerate hearts over time
+    if(s.hearts.count<MAX_HEARTS&&s.hearts.lastLost){
+        const elapsed=Date.now()-s.hearts.lastLost;
+        const regen=Math.floor(elapsed/HEART_REGEN_MS);
+        if(regen>0){s.hearts.count=Math.min(MAX_HEARTS,s.hearts.count+regen);s.hearts.lastLost=regen>=MAX_HEARTS?0:s.hearts.lastLost+regen*HEART_REGEN_MS;save(s)}
+    }
+    return s.hearts.count;
+}
+function loseHeart(){
+    const s=G();if(!s.hearts)s.hearts={count:MAX_HEARTS,lastLost:0};
+    s.hearts.count=Math.max(0,s.hearts.count-1);
+    s.hearts.lastLost=Date.now();save(s);
+    renderHearts();
+    if(s.hearts.count<=0) showNoHeartsModal();
+}
+function renderHearts(){
+    const h=getHearts(),el=document.getElementById('hearts-display');if(!el)return;
+    el.innerHTML='';
+    for(let i=0;i<MAX_HEARTS;i++){
+        const span=document.createElement('span');span.className='heart'+(i>=h?' lost':'');
+        span.textContent=i<h?'❤️':'🖤';el.appendChild(span);
+    }
+}
+function showNoHeartsModal(){
+    const overlay=document.createElement('div');overlay.className='no-hearts-overlay';overlay.id='no-hearts-modal';
+    const timeLeft=Math.ceil((HEART_REGEN_MS-(Date.now()-(G().hearts?.lastLost||0)))/1000);
+    overlay.innerHTML=`<div class="no-hearts-card"><span class="big-emoji">💔</span><h2>נגמרו הלבבות!</h2><p>חכו קצת והם יחזרו</p><div class="timer-text" id="hearts-timer">${Math.max(0,Math.floor(timeLeft/60))}:${String(Math.max(0,timeLeft%60)).padStart(2,'0')}</div><button class="btn-primary" onclick="this.closest('.no-hearts-overlay').remove();showScreen('screen-map')">חזרה למפה</button></div>`;
+    document.body.appendChild(overlay);
+}
+function animateHeartBreak(index){
+    const hearts=document.querySelectorAll('#hearts-display .heart');
+    if(hearts[index]) hearts[index].classList.add('breaking');
+}
+
+// ===== COMBO MULTIPLIER =====
+function getComboMultiplier(streak){
+    if(streak>=9) return 4;
+    if(streak>=6) return 3;
+    if(streak>=3) return 2;
+    return 1;
+}
+function updateComboDisplay(streak){
+    const el=document.getElementById('combo-display');if(!el)return;
+    const mult=getComboMultiplier(streak);
+    if(mult<=1){el.classList.remove('show');el.classList.add('hide');return}
+    el.textContent=`x${mult} קומבו!`;
+    el.className='combo-display show';
+    if(mult===2) el.classList.add('combo-x2');
+    else if(mult===3) el.classList.add('combo-x3');
+    else if(mult>=4) el.classList.add('combo-x4');
+}
+
+// ===== STORY INTROS =====
+const STORIES={
+    counting:{char:'🐞',text:'מרינט צריכה לספור את <strong>העוגיות במאפייה</strong> לפני שהלקוחות מגיעים! תעזרו לה?',btn:'בואו נספור! 🍪'},
+    addition:{char:'🐞',text:'הלקוחות הזמינו עוד ועוד מאפים! צריך <strong>לחבר</strong> את כל ההזמנות. תעזרו למרינט?',btn:'בואו נחבר! ➕'},
+    subtraction:{char:'🐱',text:'חתול שחור קנה מאפים ונתן לחברים! צריך לגלות <strong>כמה נשאר</strong>. תעזרו לו?',btn:'בואו נחסר! ➖'},
+    comparison:{char:'⚖️',text:'טיקי רוצה לדעת <strong>מי קיבל יותר</strong> עוגיות — מרינט או אדריאן? תעזרו לה להשוות?',btn:'בואו נשווה! ⚖️'},
+    daily:{char:'⚡',text:'יש <strong>משימה מיוחדת</strong> היום! 5 תרגילים מעורבים עם בונוס של 5 מטבעות! מוכנים?',btn:'קדימה! ⚡'}
+};
+function showStoryIntro(type,callback){
+    const story=STORIES[type]||STORIES.counting;
+    const overlay=document.createElement('div');overlay.className='story-overlay';
+    overlay.innerHTML=`<div class="story-card"><div class="story-character">${story.char}</div><div class="story-text">${story.text}</div><button class="btn-hero" id="story-go">${story.btn}</button></div>`;
+    document.body.appendChild(overlay);
+    document.getElementById('story-go').onclick=()=>{playClick();overlay.remove();callback()};
+    overlay.addEventListener('click',e=>{if(e.target===overlay){playClick();overlay.remove();callback()}});
+}
+
+// ===== STREAK CALENDAR =====
+function getPlayDates(){try{return JSON.parse(localStorage.getItem('play_dates')||'[]')}catch{return[]}}
+function markTodayPlayed(){
+    const dates=getPlayDates();
+    const today=new Date().toISOString().slice(0,10);
+    if(!dates.includes(today)){dates.push(today);localStorage.setItem('play_dates',JSON.stringify(dates))}
+}
+function getStreakCount(){
+    const dates=getPlayDates().sort().reverse();if(!dates.length)return 0;
+    let streak=0;const now=new Date();
+    for(let i=0;i<dates.length;i++){
+        const d=new Date(dates[i]);
+        const diff=Math.floor((now-d)/(86400000));
+        if(diff===i||diff===i+1) streak++;else break;
+    }
+    return streak;
+}
+function renderStreakCalendar(){
+    const grid=document.getElementById('streak-grid');if(!grid)return;
+    const dates=getPlayDates();const today=new Date();
+    const days=['א','ב','ג','ד','ה','ו','ש'];
+    grid.innerHTML='';
+    // Show last 7 days
+    for(let i=6;i>=0;i--){
+        const d=new Date(today);d.setDate(d.getDate()-i);
+        const dateStr=d.toISOString().slice(0,10);
+        const dayName=days[d.getDay()];
+        const played=dates.includes(dateStr);
+        const isToday=i===0;
+        const div=document.createElement('div');
+        div.className=`streak-day${played?' played':''}${isToday?' today':''}`;
+        div.textContent=dayName;
+        grid.appendChild(div);
+    }
+    const fire=document.getElementById('streak-fire');
+    const streak=getStreakCount();
+    if(fire) fire.textContent=streak>0?`🔥 ${streak} ימים`:'';
+}
+
+// ===== POWER-UPS =====
+let powerups={skip:1,hint:2,double:1};
+let doubleActive=false;
+
+function initPowerups(){
+    const saved=G().powerups;if(saved)powerups={...powerups,...saved};
+    updatePowerupUI();
+
+    document.getElementById('pu-skip').addEventListener('click',()=>{
+        if(powerups.skip<=0||!curProb)return;
+        powerups.skip--;savePowerups();updatePowerupUI();
+        playClick();tikkiSay('דילגנו! ⏭️',1500);
+        roundResults.push(true); // Count as correct
+        U('session.currentRound',G().session.currentRound+1);
+        slideToNext();
+    });
+
+    document.getElementById('pu-hint').addEventListener('click',()=>{
+        if(powerups.hint<=0||!curProb)return;
+        powerups.hint--;savePowerups();updatePowerupUI();
+        playClick();tikkiSay('הנה רמז! 💡',1500);
+        // Remove half the wrong answers
+        const btns=document.querySelectorAll('.num-btn:not(:disabled),.compare-btn:not(:disabled)');
+        const wrong=[...btns].filter(b=>String(b.dataset.value)!==String(curProb.answer));
+        const toRemove=wrong.slice(0,Math.ceil(wrong.length/2));
+        toRemove.forEach(b=>{b.style.opacity='.15';b.disabled=true});
+    });
+
+    document.getElementById('pu-double').addEventListener('click',()=>{
+        if(powerups.double<=0)return;
+        powerups.double--;savePowerups();updatePowerupUI();
+        doubleActive=true;
+        playClick();tikkiSay('מטבעות כפולים! ✨',1500);
+        document.getElementById('pu-double').style.borderColor='var(--lb-gold)';
+        document.getElementById('pu-double').style.boxShadow='0 0 12px rgba(255,215,0,.5)';
+    });
+}
+function savePowerups(){G().powerups=powerups;save(G())}
+function updatePowerupUI(){
+    document.getElementById('pu-skip-count').textContent=powerups.skip;
+    document.getElementById('pu-hint-count').textContent=powerups.hint;
+    document.getElementById('pu-double-count').textContent=powerups.double;
+    document.getElementById('pu-skip').disabled=powerups.skip<=0;
+    document.getElementById('pu-hint').disabled=powerups.hint<=0;
+    document.getElementById('pu-double').disabled=powerups.double<=0;
+}
+function slideToNext(){
+    const c=document.getElementById('exercise-content');
+    c.classList.add('slide-out');
+    setTimeout(()=>{c.classList.remove('slide-out');c.classList.add('slide-in');showNextProb();
+        setTimeout(()=>c.classList.remove('slide-in'),50);
+    },250);
+}
+
+// ===== REWARD WHEEL =====
+const WHEEL_PRIZES=[
+    {label:'🪙',value:3,text:'+3 מטבעות',color:'#FFD700'},
+    {label:'⏭️',value:'skip',text:'דילוג +1',color:'#4FC3F7'},
+    {label:'🪙',value:5,text:'+5 מטבעות',color:'#4CAF50'},
+    {label:'💡',value:'hint',text:'רמז +1',color:'#CE93D8'},
+    {label:'🪙',value:1,text:'+1 מטבע',color:'#FFB6C1'},
+    {label:'✨',value:'double',text:'כפול +1',color:'#FF9800'},
+    {label:'🪙',value:10,text:'+10 מטבעות!',color:'#E43B3B'},
+    {label:'❤️',value:'heart',text:'+1 לב',color:'#F44336'},
+];
+function showRewardWheel(){
+    const overlay=document.createElement('div');overlay.className='wheel-overlay';overlay.id='reward-wheel';
+    const segSize=360/WHEEL_PRIZES.length;
+    overlay.innerHTML=`<div class="wheel-card"><h2>🎰 גלגל המזל!</h2><div class="wheel-container"><div class="wheel-pointer">▼</div><div class="wheel-circle" id="wheel-circle">${WHEEL_PRIZES.map((p,i)=>`<div class="wheel-segment" style="background:${p.color};transform:rotate(${i*segSize}deg) skewY(-${90-segSize}deg);font-size:1.8rem;padding-top:8px">${p.label}</div>`).join('')}</div></div><div class="wheel-result" id="wheel-result">לחצו לסיבוב!</div><button class="btn-hero" id="spin-btn">🎰 סובבו!</button></div>`;
+    document.body.appendChild(overlay);
+    let spun=false;
+    document.getElementById('spin-btn').addEventListener('click',()=>{
+        if(spun)return;spun=true;
+        const idx=rand(0,WHEEL_PRIZES.length-1);
+        const prize=WHEEL_PRIZES[idx];
+        const deg=360*5+(idx*segSize)+rand(0,segSize-1); // 5 full rotations + land on prize
+        const wheel=document.getElementById('wheel-circle');
+        wheel.style.transform=`rotate(${deg}deg)`;
+        document.getElementById('spin-btn').disabled=true;
+        playClick();
+        setTimeout(()=>{
+            document.getElementById('wheel-result').textContent=prize.text;
+            playPurchase();showConfetti(20);
+            // Apply prize
+            if(typeof prize.value==='number'){addCoins(prize.value)}
+            else if(prize.value==='skip'){powerups.skip++;savePowerups()}
+            else if(prize.value==='hint'){powerups.hint++;savePowerups()}
+            else if(prize.value==='double'){powerups.double++;savePowerups()}
+            else if(prize.value==='heart'){const s=G();if(!s.hearts)s.hearts={count:5,lastLost:0};s.hearts.count=Math.min(MAX_HEARTS,s.hearts.count+1);save(s)}
+            updatePowerupUI();
+            document.getElementById('spin-btn').textContent='✓ המשך';
+            document.getElementById('spin-btn').disabled=false;
+            document.getElementById('spin-btn').onclick=()=>{overlay.remove();showScreen('screen-map')};
+        },3200);
+    });
+}
+
+// ===== JELLY EFFECT =====
+function jellyBtn(btn){btn.classList.add('jelly');setTimeout(()=>btn.classList.remove('jelly'),500)}
+
+// ===== BUTTON RIPPLE =====
+function addRipple(btn,e){
+    const ripple=document.createElement('span');ripple.className='ripple';
+    const rect=btn.getBoundingClientRect();
+    const size=Math.max(rect.width,rect.height);
+    ripple.style.width=ripple.style.height=size+'px';
+    ripple.style.left=(e.clientX-rect.left-size/2)+'px';
+    ripple.style.top=(e.clientY-rect.top-size/2)+'px';
+    btn.appendChild(ripple);
+    setTimeout(()=>ripple.remove(),500);
+}
+
+// ===== ACHIEVEMENTS =====
+const BADGES=[
+    {id:'first-correct',name:'צעד ראשון',desc:'תשובה נכונה ראשונה',icon:'🌟',check:s=>s.player.totalCoinsEarned>=1},
+    {id:'ten-correct',name:'עשר מושלם',desc:'10 תשובות נכונות',icon:'🔟',check:s=>getTotalCompleted(s)>=10},
+    {id:'streak-5',name:'על גלגל',desc:'רצף של 5 נכונות',icon:'🔥',check:s=>Object.values(s.progress).some(p=>p.bestStreak>=5)},
+    {id:'streak-10',name:'בלתי ניתן לעצירה',desc:'רצף של 10 נכונות',icon:'💥',check:s=>Object.values(s.progress).some(p=>p.bestStreak>=10)},
+    {id:'first-buy',name:'קניה ראשונה',desc:'קנו פריט בחנות',icon:'🛍️',check:s=>s.shop.purchasedItems.length>=1},
+    {id:'furnished',name:'מעצב פנים',desc:'הציבו 5 פריטים בבית',icon:'🏠',check:s=>Object.keys(s.house.placedItems).length>=5},
+    {id:'unlock-sub',name:'פורץ דרך',desc:'פתחו את החיסור',icon:'🔓',check:s=>s.progress.subtraction.unlocked},
+    {id:'unlock-comp',name:'מתמטיקאי',desc:'פתחו את גדול/קטן',icon:'⚖️',check:s=>s.progress.comparison.unlocked},
+    {id:'rich',name:'עשיר',desc:'צברו 50 מטבעות סה"כ',icon:'💰',check:s=>s.player.totalCoinsEarned>=50},
+    {id:'all-types',name:'רב-תחומי',desc:'שחקו בכל 4 הסוגים',icon:'🎯',check:s=>Object.values(s.progress).every(p=>p.completed>0)},
+    {id:'daily-done',name:'אתגר יומי',desc:'סיימו אתגר יומי',icon:'⚡',check:s=>s.dailyCompleted},
+    {id:'fifty',name:'חמישים',desc:'50 תרגילים סה"כ',icon:'🏆',check:s=>getTotalCompleted(s)>=50},
+];
+let earnedBadges=[];
+function checkBadges(s){
+    let newBadge=false;
+    BADGES.forEach(b=>{
+        if(!earnedBadges.includes(b.id)&&b.check(s)){
+            earnedBadges.push(b.id);newBadge=b;
+        }
+    });
+    if(newBadge){
+        showBadgeToast(newBadge);showFireworks(3);
+        // Save earned badges
+        s.earnedBadges=earnedBadges;save(s);
+    }
+    // Update button count
+    const cnt=document.getElementById('badge-count');
+    if(cnt) cnt.textContent=earnedBadges.length;
+}
+function showBadgeToast(badge){
+    const t=document.createElement('div');t.className='unlock-toast';
+    t.innerHTML=`<span>${badge.icon}</span>הישג חדש: ${badge.name}!`;
+    document.body.appendChild(t);setTimeout(()=>t.remove(),3000);
+    tikkiSay(`השגת: ${badge.name}! ${badge.icon}`,3000);
+}
+function renderBadges(){
+    const grid=document.getElementById('badge-grid');
+    grid.innerHTML=BADGES.map(b=>{
+        const earned=earnedBadges.includes(b.id);
+        return `<div class="badge ${earned?'earned':''}"><span class="badge-icon">${earned?b.icon:'🔒'}</span><span class="badge-name">${b.name}</span><span class="badge-desc">${b.desc}</span></div>`;
+    }).join('');
+}
+
+// ===== FIREWORKS =====
+function showFireworks(count){
+    for(let f=0;f<(count||3);f++){
+        setTimeout(()=>{
+            const fw=document.createElement('div');fw.className='firework';
+            const x=rand(15,85),y=rand(15,50);
+            fw.style.left=x+'%';fw.style.top=y+'%';
+            const colors=['#E43B3B','#FFD700','#4CAF50','#FFB6C1','#4FC3F7','#CE93D8','#FF9800'];
+            for(let i=0;i<20;i++){
+                const p=document.createElement('div');p.className='firework-particle';
+                const angle=(i/20)*360,dist=rand(30,80);
+                const dx=Math.cos(angle*Math.PI/180)*dist;
+                const dy=Math.sin(angle*Math.PI/180)*dist;
+                p.style.background=colors[rand(0,colors.length-1)];
+                p.style.animation=`fireworkBurst 0.8s ease-out ${rand(0,2)/10}s forwards`;
+                p.style.setProperty('--dx',dx+'px');p.style.setProperty('--dy',dy+'px');
+                // Inline the transform since CSS custom properties in keyframes don't work everywhere
+                p.animate([
+                    {transform:'translate(0,0) scale(1.5)',opacity:1},
+                    {transform:`translate(${dx}px,${dy}px) scale(0)`,opacity:0}
+                ],{duration:800+rand(0,400),easing:'ease-out',fill:'forwards'});
+                fw.appendChild(p);
+            }
+            document.body.appendChild(fw);
+            setTimeout(()=>fw.remove(),1500);
+        },f*400);
+    }
+}
+
+// ===== DAILY CHALLENGE =====
+function getDailyKey(){return 'daily_'+new Date().toISOString().slice(0,10)}
+function isDailyDone(){return localStorage.getItem(getDailyKey())==='done'}
+function completeDailyChallenge(){
+    localStorage.setItem(getDailyKey(),'done');
+    addCoins(5);showFireworks(5);showConfetti(40);
+    tikkiSay('אתגר יומי הושלם! +5 🪙',3000);
+    S.dailyCompleted=true;checkBadges(S);
+    updateDailyUI();
+}
+function updateDailyUI(){
+    const el=document.getElementById('daily-challenge');if(!el)return;
+    if(isDailyDone()){
+        el.classList.add('completed');
+        document.getElementById('daily-desc').textContent='הושלם היום! חזרו מחר ✓';
+        document.getElementById('daily-reward').textContent='✓';
+    }
+}
+
+// ===== ADAPTIVE DIFFICULTY =====
+function getAdaptiveMax(type,s){
+    const p=s.progress[type];
+    // Check recent performance from streak
+    const streak=s.session.currentStreak;
+    const base=maxLvl(p.completed);
+    // If on a hot streak, slightly increase
+    if(streak>=5) return Math.min(20,base+3);
+    // If struggling (0 streak and low completed), decrease
+    if(streak===0&&p.completed<5) return Math.max(5,base-2);
+    return base;
+}
+
+// ===== PROGRESS DOTS =====
+let roundResults=[];
+function renderProgressDots(total,current){
+    const cont=document.getElementById('progress-dots');
+    cont.innerHTML='';
+    for(let i=0;i<total;i++){
+        const dot=document.createElement('div');dot.className='progress-dot';
+        if(i<roundResults.length) dot.classList.add(roundResults[i]?'correct':'wrong');
+        else if(i===current) dot.classList.add('current');
+        cont.appendChild(dot);
+    }
+}
+
+// ===== SCREEN FLASH =====
+function flashScreen(type){
+    const screen=document.getElementById('screen-exercises');
+    screen.classList.add(type+'-flash');
+    setTimeout(()=>screen.classList.remove(type+'-flash'),300);
+}
+
+// ===== LEVEL SYSTEM =====
+const LEVELS=[
+    {name:'מתחיל',min:0,emoji:'🌱'},
+    {name:'חוקר',min:10,emoji:'🔍'},
+    {name:'גיבור',min:30,emoji:'⭐'},
+    {name:'אלוף',min:60,emoji:'🏆'},
+    {name:'מאסטר',min:100,emoji:'👑'},
+];
+function getLevel(totalCompleted){
+    let lvl=LEVELS[0];
+    for(const l of LEVELS) if(totalCompleted>=l.min) lvl=l;
+    return lvl;
+}
+function getTotalCompleted(s){
+    return Object.values(s.progress).reduce((sum,p)=>sum+p.completed,0);
+}
+function getNextLevel(totalCompleted){
+    for(const l of LEVELS) if(totalCompleted<l.min) return l;
+    return null;
+}
+function updateLevelUI(s){
+    const total=getTotalCompleted(s),lvl=getLevel(total),next=getNextLevel(total);
+    const badge=document.getElementById('level-badge');
+    if(badge) badge.textContent=`${lvl.emoji} ${lvl.name}`;
+    const fill=document.getElementById('xp-fill'),txt=document.getElementById('xp-text');
+    if(next){
+        const prev=LEVELS[LEVELS.indexOf(next)-1]||{min:0};
+        const pct=((total-prev.min)/(next.min-prev.min))*100;
+        if(fill) fill.style.width=Math.min(100,pct)+'%';
+        if(txt) txt.textContent=`${total}/${next.min} → ${next.emoji} ${next.name}`;
+    }else{
+        if(fill) fill.style.width='100%';
+        if(txt) txt.textContent=`${lvl.emoji} ${lvl.name} — מקסימום!`;
+    }
+}
+
+// ===== SHOP =====
+let shopFilter='all';
+function renderShop(s){
+    const grid=document.getElementById('shop-grid'),cd=document.getElementById('shop-coins');
+    if(cd)cd.textContent=s.player.coins;
+    const items=shopFilter==='all'?CATALOG:CATALOG.filter(i=>i.category===shopFilter);
+    grid.innerHTML=items.map(item=>{
+        const own=s.shop.purchasedItems.includes(item.id),can=s.player.coins>=item.price;
+        const imgSrc=`assets/images/items/${item.id}.png`;
+        return `<div class="shop-item ${own?'owned':''} ${!can&&!own?'too-expensive':''}" data-id="${item.id}"><img class="shop-item-img" src="${imgSrc}" alt="${item.emoji}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="shop-item-emoji" style="display:none">${item.emoji}</div><div class="shop-item-name">${item.name}</div>${own?'<div class="shop-item-owned">✓ נקנה!</div>':`<div class="shop-item-price"><span class="coin-icon">🪙</span> ${item.price}</div><button class="shop-buy-btn" ${!can?'disabled':''}>${can?'קנה!':` ${item.price-s.player.coins} 🪙 חסר`}</button>`}</div>`;
+    }).join('');
+    grid.querySelectorAll('.shop-buy-btn:not([disabled])').forEach(btn=>{
+        const id=btn.closest('.shop-item').dataset.id;
+        btn.addEventListener('click',e=>{e.stopPropagation();buyItem(id)});
+    });
+}
+function buyItem(id){
+    const item=CATALOG.find(i=>i.id===id);if(!item)return;
+    const modal=document.getElementById('shop-modal'),mc=document.getElementById('shop-modal-content');
+    mc.innerHTML=`<div class="modal-emoji">${item.emoji}</div><h3>לקנות ${item.name}?</h3><p class="modal-price"><span class="coin-icon">🪙</span> ${item.price} מטבעות</p><div class="modal-buttons"><button class="btn-primary" id="confirm-buy">כן, קנה!</button><button class="btn-secondary" id="cancel-buy">לא, תודה</button></div>`;
+    modal.classList.add('active');
+    document.getElementById('confirm-buy').onclick=()=>{if(spendCoins(item.price)){purchaseItem(item.id);playPurchase();modal.classList.remove('active');showConfetti(20);const t=document.createElement('div');t.className='purchase-toast';t.innerHTML=`<span>${item.emoji}</span> ${item.name} נוסף לבית!`;document.getElementById('screen-shop').appendChild(t);setTimeout(()=>t.remove(),2000);tikkiSay('יופי של קנייה! 🎁',2000)}};
+    document.getElementById('cancel-buy').onclick=()=>{playClick();modal.classList.remove('active')};
+    modal.onclick=e=>{if(e.target===modal)modal.classList.remove('active')};
+}
+
+// ===== HOUSE =====
+let selItem=null;
+function renderHouse(s){renderSlots(s);renderInv(s);const cd=document.getElementById('house-coins');if(cd)cd.textContent=s.player.coins}
+function renderSlots(s){
+    const sc=document.getElementById('house-slots');
+    sc.innerHTML=SLOTS.map(sl=>{
+        const pid=s.house.placedItems[sl.id],pi=pid?CATALOG.find(i=>i.id===pid):null;
+        const imgSrc=pi?`assets/images/items/${pi.id}.png`:'';
+        return `<div class="house-slot ${pi?'filled':'empty'} ${selItem?'accepting':''}" data-slot="${sl.id}" data-accepts="${sl.accepts}" style="left:${sl.x}%;top:${sl.y}%;width:${sl.w}%;height:${sl.h}%">${pi?`<img class="placed-item-img" src="${imgSrc}" alt="${pi.emoji}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placed-item-emoji" style="display:none">${pi.emoji}</span><span class="placed-item-name">${pi.name}</span>`:`<span class="slot-label">${sl.label}</span>`}</div>`;
+    }).join('');
+    sc.querySelectorAll('.house-slot').forEach(el=>{el.addEventListener('click',()=>{
+        const slId=el.dataset.slot,acc=el.dataset.accepts;
+        if(s.house.placedItems[slId]){playClick();removeItem(slId);selItem=null;return}
+        if(selItem){const item=CATALOG.find(i=>i.id===selItem);if(item&&item.category===acc){playPurchase();placeItem(slId,selItem);selItem=null;tikkiSay('יפה! 🏠',1500)}else{el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),500)}}
+    })});
+}
+function renderInv(s){
+    const tray=document.getElementById('house-inventory');
+    const placed=Object.values(s.house.placedItems);
+    const avail=s.shop.purchasedItems.filter(id=>!placed.includes(id)).map(id=>CATALOG.find(i=>i.id===id)).filter(Boolean);
+    if(avail.length===0&&s.shop.purchasedItems.length===0){
+        tray.innerHTML=`<div class="empty-inventory"><p>אין עדיין פריטים!</p><button class="btn-primary" id="h2s">🛍️ לכו לחנות</button></div>`;
+        const b=document.getElementById('h2s');if(b)b.onclick=()=>{playClick();showScreen('screen-shop')};return;
+    }
+    if(avail.length===0){tray.innerHTML='<div class="empty-inventory"><p>כל הפריטים מוצבים! 🎉</p></div>';return}
+    tray.innerHTML=avail.map(it=>`<div class="inventory-item ${selItem===it.id?'selected':''}" data-id="${it.id}" data-category="${it.category}"><img class="inv-item-img" src="assets/images/items/${it.id}.png" alt="${it.emoji}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="inv-emoji" style="display:none">${it.emoji}</span><span class="inv-name">${it.name}</span></div>`).join('');
+    tray.querySelectorAll('.inventory-item').forEach(el=>{el.addEventListener('click',()=>{playClick();const id=el.dataset.id;selItem=selItem===id?null:id;renderHouse(G())})});
+}
+
+// ===== MAP =====
+function updateMap(s){
+    const cd=document.getElementById('map-coins');if(cd)cd.textContent=s.player.coins;
+    document.querySelectorAll('.map-station').forEach(st=>{
+        const type=st.dataset.type,prog=s.progress[type],lock=st.querySelector('.lock-icon'),stars=st.querySelector('.station-stars');
+        if(prog.unlocked){st.classList.remove('locked');if(lock)lock.style.display='none'}
+        else{st.classList.add('locked');if(lock)lock.style.display='flex'}
+        if(stars){const sc=Math.min(3,Math.floor(prog.completed/10));stars.textContent='⭐'.repeat(sc)+'☆'.repeat(3-sc)}
+    });
+    const n=document.getElementById('map-player-name');if(n)n.textContent=s.player.name;
+}
+
+// ===== WELCOME STARS =====
+function createStars(){
+    const c=document.getElementById('welcome-stars');
+    for(let i=0;i<40;i++){
+        const s=document.createElement('div');s.className='welcome-star';
+        s.style.left=rand(0,100)+'%';s.style.top=rand(0,50)+'%';
+        s.style.animationDelay=rand(0,20)/10+'s';s.style.animationDuration=rand(15,30)/10+'s';
+        c.appendChild(s);
+    }
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded',()=>{
+    initState();createStars();
+    const s=G(),ni=document.getElementById('player-name'),sb=document.getElementById('start-btn');
+    if(s.player.name){
+        document.getElementById('welcome-new').style.display='none';
+        document.getElementById('welcome-back').style.display='block';
+        document.getElementById('welcome-name').textContent=s.player.name;
+        document.getElementById('continue-btn').onclick=()=>{resumeAudio();playClick();showScreen('screen-map')};
+    }
+    sb.addEventListener('click',()=>{
+        const name=ni.value.trim();
+        if(!name){ni.classList.add('shake');setTimeout(()=>ni.classList.remove('shake'),500);return}
+        resumeAudio();playClick();U('player.name',name);showScreen('screen-map');
+        tikkiSay(`שלום ${name}! בואו נלמד חשבון! 🐞`,3000);
+    });
+    ni.addEventListener('keydown',e=>{if(e.key==='Enter')sb.click()});
+
+    // Map
+    document.querySelectorAll('.map-station').forEach(st=>{st.addEventListener('click',()=>{
+        const type=st.dataset.type;if(!G().progress[type].unlocked){st.classList.add('shake');setTimeout(()=>st.classList.remove('shake'),500);return}
+        if(getHearts()<=0){showNoHeartsModal();return}
+        playClick();
+        showStoryIntro(type,()=>{showScreen('screen-exercises');startExSession(type);renderHearts()});
+    })});
+    document.getElementById('map-shop-btn').addEventListener('click',()=>{playClick();showScreen('screen-shop')});
+    document.getElementById('map-house-btn').addEventListener('click',()=>{playClick();showScreen('screen-house')});
+    subscribe(updateMap);updateMap(G());renderStreakCalendar();
+
+    // Exercises + Power-ups
+    document.getElementById('exercise-back-btn').addEventListener('click',()=>{playClick();doubleActive=false;showScreen('screen-map')});
+    initPowerups();
+
+    // Shop
+    document.getElementById('shop-back-btn').addEventListener('click',()=>{playClick();showScreen('screen-map')});
+    // Shop tabs
+    document.querySelectorAll('.shop-tab').forEach(tab=>{tab.addEventListener('click',()=>{
+        document.querySelectorAll('.shop-tab').forEach(t=>t.classList.remove('active'));
+        tab.classList.add('active');shopFilter=tab.dataset.cat;renderShop(G());
+    })});
+    subscribe(renderShop);renderShop(G());
+    // Level
+    subscribe(updateLevelUI);updateLevelUI(G());
+
+    // House
+    document.getElementById('house-back-btn').addEventListener('click',()=>{playClick();selItem=null;showScreen('screen-map')});
+    subscribe(renderHouse);renderHouse(G());
+
+    // Sound toggle
+    const stBtn=document.getElementById('sound-toggle');
+    soundOn=s.settings.soundEnabled!==false;stBtn.textContent=soundOn?'🔊':'🔇';
+    stBtn.addEventListener('click',()=>{soundOn=!soundOn;stBtn.textContent=soundOn?'🔊':'🔇';U('settings.soundEnabled',soundOn)});
+
+    // Tikki click
+    document.getElementById('tikki').addEventListener('click',()=>{tikkiSay(TIKKI_TIPS[rand(0,TIKKI_TIPS.length-1)],2500)});
+
+    // Global coins
+    subscribe(s=>{document.querySelectorAll('.global-coins').forEach(el=>{el.textContent=s.player.coins})});
+
+    // Achievements
+    earnedBadges=G().earnedBadges||[];
+    const abtn=document.getElementById('achievements-btn');
+    abtn.addEventListener('click',()=>{renderBadges();document.getElementById('achievements-panel').classList.add('active')});
+    document.getElementById('close-achievements').addEventListener('click',()=>{document.getElementById('achievements-panel').classList.remove('active')});
+    document.getElementById('achievements-panel').addEventListener('click',e=>{if(e.target.classList.contains('achievements-panel'))e.target.classList.remove('active')});
+    document.getElementById('badge-count').textContent=earnedBadges.length;
+
+    // Daily challenge
+    updateDailyUI();
+    document.getElementById('daily-challenge').addEventListener('click',()=>{
+        if(isDailyDone())return;
+        if(getHearts()<=0){showNoHeartsModal();return}
+        playClick();
+        showStoryIntro('daily',()=>{
+            resetSession();roundResults=[];
+            const types=['counting','addition'];
+            if(G().progress.subtraction.unlocked) types.push('subtraction');
+            if(G().progress.comparison.unlocked) types.push('comparison');
+            U('session.currentExerciseType','daily');U('session.currentRound',0);U('session.sessionCoins',0);U('session.currentStreak',0);U('session.roundsPerSession',5);
+            window._dailyTypes=types;
+            showScreen('screen-exercises');renderHearts();
+            document.getElementById('exercise-type-title').textContent='⚡ אתגר יומי';
+            showNextProb();
+        });
+    });
+
+    showScreen('screen-welcome');
+
+    // Dismiss splash
+    setTimeout(()=>{const sp=document.getElementById('splash');if(sp){sp.style.opacity='0';setTimeout(()=>sp.remove(),500)}},800);
+});
+})();
+</script>
+</body>
+</html>
