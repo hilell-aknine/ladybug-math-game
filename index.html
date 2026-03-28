@@ -98,6 +98,13 @@ input[type="text"]:focus{border-color:var(--lb-red);box-shadow:var(--shadow-glow
 /* Tikki image mascot */
 .tikki-img{width:50px;height:50px;object-fit:contain}
 
+/* === VIDEO INTEGRATION === */
+.welcome-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;opacity:.6}
+.celebration-video{width:160px;height:160px;object-fit:contain;border-radius:var(--radius-lg);filter:drop-shadow(0 4px 12px rgba(0,0,0,.3))}
+.screen-transition{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.4);pointer-events:none;opacity:0;transition:opacity .2s}
+.screen-transition.active{opacity:1}
+.screen-transition video{width:100%;height:100%;object-fit:cover}
+
 /* === WELCOME === */
 .welcome-bg{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,#0B0B1A 0%,#16213E 25%,#1A1A2E 40%,#4A1942 65%,#E43B3B 100%);background-image:url('assets/images/backgrounds/welcome.png'),linear-gradient(180deg,#0B0B1A 0%,#16213E 25%,#1A1A2E 40%,#4A1942 65%,#E43B3B 100%);background-size:cover,cover;background-position:center bottom,center;position:relative;overflow:hidden;min-height:100vh}
 .floating-ladybugs{position:absolute;inset:0;pointer-events:none}
@@ -498,9 +505,15 @@ input[type="text"]:focus{border-color:var(--lb-red);box-shadow:var(--shadow-glow
         </div>
     </div>
 
+    <!-- Screen transition overlay -->
+    <div class="screen-transition" id="screen-transition">
+        <video id="transition-video" muted playsinline src="assets/videos/transition-magic.mp4" onerror="this.parentElement.remove()"></video>
+    </div>
+
     <!-- WELCOME -->
     <section id="screen-welcome" class="screen">
         <div class="welcome-bg">
+            <video class="welcome-video" autoplay loop muted playsinline src="assets/videos/welcome-intro.mp4" onerror="this.style.display='none'"></video>
             <div class="welcome-stars" id="welcome-stars"></div>
             <div class="floating-ladybugs">
                 <span class="float-lb" style="--delay:0s;--x:10%">🐞</span>
@@ -790,9 +803,22 @@ const SLOTS=[
 
 // ===== SCREEN ROUTER =====
 function showScreen(id){
-    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-    const t=document.getElementById(id);if(t)t.classList.add('active');
-    // Hide tikki on welcome
+    const transEl=document.getElementById('screen-transition');
+    const transVid=document.getElementById('transition-video');
+    const prevScreen=document.querySelector('.screen.active');
+    if(prevScreen&&id!=='screen-welcome'&&transEl&&transVid){
+        transEl.classList.add('active');
+        transVid.currentTime=0;
+        transVid.play().catch(()=>{});
+        setTimeout(()=>{
+            document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+            const t=document.getElementById(id);if(t)t.classList.add('active');
+            setTimeout(()=>transEl.classList.remove('active'),200);
+        },400);
+    } else {
+        document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+        const t=document.getElementById(id);if(t)t.classList.add('active');
+    }
     const isWelcome=id==='screen-welcome';
     document.getElementById('tikki').style.display=isWelcome?'none':'block';
     document.getElementById('sound-toggle').style.display=isWelcome?'none':'flex';
@@ -950,7 +976,7 @@ function showComplete(){
     if(s.session.currentExerciseType==='daily'&&!isDailyDone()){completeDailyChallenge()}
     const seType=s.session.currentExerciseType;
     const bestStreak=seType==='daily'?s.session.currentStreak:(s.progress[seType]?s.progress[seType].bestStreak:0);
-    c.innerHTML=`<div class="session-complete"><img class="character-img" src="assets/images/characters/ladybug-celebrate.png" alt="🎉" style="width:120px;height:120px" onerror="this.outerHTML='<div class=celebration-emoji>🎉🐞🎉</div>'"><h2>כל הכבוד!</h2><p>${seType==='daily'?'סיימת את האתגר היומי!':'סיימת את כל התרגילים!'}</p><div class="session-stats"><div class="stat-item"><span class="stat-icon">🪙</span><span class="stat-value">${coins}</span><span class="stat-label">מטבעות</span></div><div class="stat-item"><span class="stat-icon">🔥</span><span class="stat-value">${bestStreak}</span><span class="stat-label">רצף שיא</span></div></div><div class="session-buttons"><button class="btn-primary" id="ses-shop">🛍️ לחנות</button><button class="btn-secondary" id="ses-map">🗺️ חזרה למפה</button><button class="btn-accent" id="ses-again">🔄 עוד סבב!</button></div></div>`;
+    c.innerHTML=`<div class="session-complete"><video class="celebration-video" autoplay muted playsinline loop src="assets/videos/celebration.mp4" poster="assets/images/characters/ladybug-celebrate.png" onerror="this.outerHTML='<img class=character-img src=assets/images/characters/ladybug-celebrate.png alt=🎉 style=width:120px;height:120px onerror=\\'this.outerHTML=&lt;div class=celebration-emoji&gt;🎉🐞🎉&lt;/div&gt;\\'>'"><h2>כל הכבוד!</h2><p>${seType==='daily'?'סיימת את האתגר היומי!':'סיימת את כל התרגילים!'}</p><div class="session-stats"><div class="stat-item"><span class="stat-icon">🪙</span><span class="stat-value">${coins}</span><span class="stat-label">מטבעות</span></div><div class="stat-item"><span class="stat-icon">🔥</span><span class="stat-value">${bestStreak}</span><span class="stat-label">רצף שיא</span></div></div><div class="session-buttons"><button class="btn-primary" id="ses-shop">🛍️ לחנות</button><button class="btn-secondary" id="ses-map">🗺️ חזרה למפה</button><button class="btn-accent" id="ses-again">🔄 עוד סבב!</button></div></div>`;
     document.getElementById('ses-shop').onclick=()=>{playClick();showScreen('screen-shop')};
     document.getElementById('ses-map').onclick=()=>{playClick();showRewardWheel()};
     document.getElementById('ses-again').onclick=()=>{playClick();startExSession(s.session.currentExerciseType)};
