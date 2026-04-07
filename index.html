@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>החיפושית המופלאה — משחק חשבון</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -46,17 +46,17 @@ input[type="text"]{width:100%;max-width:300px;padding:14px 20px;font-size:1.2rem
 input[type="text"]:focus{border-color:var(--lb-red);box-shadow:var(--shadow-glow-red)}
 
 .coin-icon{font-size:1.3em}.coin-count{font-size:1.2rem;font-weight:700;color:var(--lb-gold-dark);background:linear-gradient(135deg,#FFF8E7,#FFE082);padding:2px 8px;border-radius:var(--radius-sm)}
-.map-header,.exercise-header,.shop-header,.house-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:linear-gradient(135deg,#fff 0%,#FFF0F3 100%);box-shadow:0 2px 12px rgba(228,59,59,.08);z-index:10;flex-shrink:0;border-bottom:2px solid rgba(255,182,193,.3)}
+.map-header,.exercise-header,.shop-header,.house-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:linear-gradient(135deg,#fff 0%,#FFF0F3 100%);box-shadow:0 2px 12px rgba(228,59,59,.08);z-index:10;flex-shrink:0;border-bottom:2px solid rgba(255,182,193,.3);gap:4px;flex-wrap:nowrap;min-height:48px}
 .header-right{display:flex;align-items:center;gap:var(--gap-sm)}
 .header-left{display:flex;align-items:center;gap:var(--gap-xs)}
 .player-avatar{font-size:1.5rem}.player-name{font-weight:600;font-size:1rem}
 
 /* Sound toggle */
-.sound-toggle{position:fixed;bottom:12px;left:12px;z-index:90;width:44px;height:44px;border-radius:var(--radius-full);border:2px solid var(--lb-pink);background:#fff;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);transition:transform .1s}
+.sound-toggle{position:fixed;bottom:calc(12px + env(safe-area-inset-bottom,0px));left:calc(12px + env(safe-area-inset-left,0px));z-index:90;width:44px;height:44px;border-radius:var(--radius-full);border:2px solid var(--lb-pink);background:#fff;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);transition:transform .1s}
 .sound-toggle:active{transform:scale(.9)}
 
 /* Tikki mascot */
-.tikki{position:fixed;bottom:16px;right:16px;z-index:80;font-size:2.5rem;animation:bob 3s infinite ease-in-out;filter:drop-shadow(0 2px 4px rgba(0,0,0,.2));transition:transform .3s;cursor:pointer}
+.tikki{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));right:calc(16px + env(safe-area-inset-right,0px));z-index:80;font-size:2.5rem;animation:bob 3s infinite ease-in-out;filter:drop-shadow(0 2px 4px rgba(0,0,0,.2));transition:transform .3s;cursor:pointer}
 .tikki:hover{transform:scale(1.2)}
 .tikki.celebrate{animation:tikkiCelebrate .6s ease}
 .tikki-bubble{position:fixed;bottom:70px;right:10px;z-index:81;background:#fff;border:2px solid var(--lb-pink);border-radius:var(--radius-md);padding:8px 14px;font-size:.9rem;font-weight:600;max-width:160px;text-align:center;box-shadow:var(--shadow-sm);opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s;pointer-events:none}
@@ -143,7 +143,7 @@ input[type="text"]:focus{border-color:var(--lb-red);box-shadow:var(--shadow-glow
 .station-name{font-size:1.1rem;font-weight:700;color:var(--lb-black)}
 .station-stars{font-size:.9rem;letter-spacing:2px}
 .lock-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2rem;background:rgba(255,255,255,.6);border-radius:var(--radius-lg)}
-.map-bottom-nav{display:flex;gap:var(--gap-md);padding:var(--gap-md);justify-content:center;background:linear-gradient(180deg,#fff,#FFF5F7);box-shadow:0 -4px 16px rgba(228,59,59,.06);flex-shrink:0;border-top:2px solid rgba(255,182,193,.2)}
+.map-bottom-nav{display:flex;gap:var(--gap-md);padding:var(--gap-md);padding-bottom:calc(var(--gap-md) + env(safe-area-inset-bottom,0px));justify-content:center;background:linear-gradient(180deg,#fff,#FFF5F7);box-shadow:0 -4px 16px rgba(228,59,59,.06);flex-shrink:0;border-top:2px solid rgba(255,182,193,.2)}
 .map-nav-btn{display:flex;flex-direction:column;align-items:center;gap:var(--gap-xs);padding:14px 32px;font-size:1rem;font-weight:600;font-family:inherit;color:var(--lb-black);background:linear-gradient(135deg,#fff,var(--lb-cream));border:2px solid rgba(255,182,193,.4);border-radius:var(--radius-lg);cursor:pointer;transition:transform .15s,box-shadow .2s;box-shadow:0 2px 8px rgba(0,0,0,.06)}
 .map-nav-btn:hover{box-shadow:0 4px 16px rgba(228,59,59,.12);border-color:var(--lb-pink)}
 .map-nav-btn span:first-child{font-size:1.5rem}.map-nav-btn:active{transform:scale(.95)}
@@ -159,7 +159,7 @@ input[type="text"]:focus{border-color:var(--lb-red);box-shadow:var(--shadow-glow
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--lb-red),var(--lb-red-light));border-radius:7px;transition:width .4s ease;width:0%;position:relative}
 .progress-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.3),transparent);border-radius:7px}
 .progress-text{font-size:.9rem;font-weight:600;color:var(--lb-black-light);min-width:50px;text-align:center;direction:ltr}
-.exercise-content{flex:1;display:flex;flex-direction:column;align-items:center;padding:var(--gap-md);gap:var(--gap-md);overflow-y:auto;position:relative}
+.exercise-content{flex:1;display:flex;flex-direction:column;align-items:center;padding:var(--gap-md);gap:var(--gap-md);overflow-y:auto;position:relative;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
 .exercise-visual{width:100%;max-width:420px;min-height:120px;display:flex;align-items:center;justify-content:center;padding:var(--gap-md);background:rgba(255,255,255,.6);border-radius:var(--radius-lg);box-shadow:inset 0 1px 4px rgba(0,0,0,.05)}
 .counting-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:320px}
 .count-item{font-size:2.2rem;animation:popIn .3s ease backwards;transition:opacity .3s}
@@ -189,7 +189,7 @@ input[type="text"]:focus{border-color:var(--lb-red);box-shadow:var(--shadow-glow
 .compare-btn:not(:disabled):hover{border-color:var(--lb-red);box-shadow:0 0 8px rgba(228,59,59,.2)}
 .compare-btn.wrong-btn{border-color:var(--wrong)}
 .compare-btn.correct-btn{border-color:var(--correct);background:#E8F5E9}
-.exercise-feedback{text-align:center;font-size:1.5rem;font-weight:700;padding:var(--gap-md);min-height:60px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.exercise-feedback{text-align:center;font-size:1.5rem;font-weight:700;padding:var(--gap-md);padding-bottom:calc(var(--gap-md) + env(safe-area-inset-bottom,0px));min-height:60px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .exercise-feedback.correct{color:var(--correct);animation:bounceIn .4s}
 .exercise-feedback.wrong{color:var(--wrong)}
 .exercise-feedback.retry{color:var(--retry)}
@@ -243,7 +243,7 @@ input[type="text"]:focus{border-color:var(--lb-red);box-shadow:var(--shadow-glow
 .house-slot:active{transform:scale(.95)}
 .placed-item-emoji{font-size:1.6rem}.placed-item-name{font-size:.55rem;font-weight:600;color:var(--lb-black-light)}
 .slot-label{color:var(--lb-black-light);font-weight:500;opacity:.5;font-size:.6rem}
-.house-tray{background:#fff;border-top:2px solid var(--lb-pink);padding:var(--gap-sm) var(--gap-md);flex-shrink:0}
+.house-tray{background:#fff;border-top:2px solid var(--lb-pink);padding:var(--gap-sm) var(--gap-md);padding-bottom:calc(var(--gap-sm) + env(safe-area-inset-bottom,0px));flex-shrink:0}
 .house-tray h3{text-align:center;margin-bottom:var(--gap-sm);font-size:1rem;color:var(--lb-black)}
 .house-inventory{display:flex;gap:var(--gap-sm);overflow-x:auto;padding:var(--gap-sm) 0;min-height:70px;align-items:center;justify-content:center}
 .inventory-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:var(--gap-sm) 12px;background:var(--lb-cream);border:2px solid var(--lb-pink);border-radius:var(--radius-md);cursor:pointer;transition:transform .15s,border-color .15s;flex-shrink:0}
@@ -471,12 +471,298 @@ input[type="text"]:focus{border-color:var(--lb-red);box-shadow:var(--shadow-glow
 /* === RAINBOW BORDER ON HIGH STREAK === */
 .rainbow-border{border-image:linear-gradient(135deg,#E43B3B,#FF9800,#FFD700,#4CAF50,#4FC3F7,#CE93D8) 1;border-width:3px;border-style:solid}
 
-/* Mobile tweaks */
-@media(max-width:400px){
-    .num-btn{width:48px;height:48px;font-size:1.1rem}
-    .shop-grid{grid-template-columns:repeat(2,1fr)}
-    .welcome-logo h1{font-size:1.8rem}
-    .compare-btn{padding:12px 18px;min-width:70px}
+/* ============================== */
+/* === MOBILE & TABLET RESPONSIVE === */
+/* ============================== */
+
+/* Safe area support for notched phones */
+html{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+body{overscroll-behavior:none}
+
+/* Prevent double-tap zoom on interactive elements */
+button,input,.map-station,.shop-item,.inventory-item,.house-slot,.daily-challenge,.compare-btn,.num-btn{touch-action:manipulation}
+
+/* === PHONES (≤ 480px) === */
+@media(max-width:480px){
+    /* Welcome */
+    .welcome-logo h1{font-size:1.7rem}
+    .welcome-logo h2{font-size:1.1rem}
+    .welcome-character{width:110px;height:110px}
+    .logo-ladybug{font-size:3.5rem}
+    .welcome-text{font-size:1.1rem}
+    .welcome-sub{font-size:.95rem}
+    .btn-hero{padding:14px 32px;font-size:1.2rem}
+    #player-name{max-width:260px;padding:12px 16px;font-size:1.1rem}
+
+    /* Headers — compact */
+    .map-header,.exercise-header,.shop-header,.house-header{padding:8px 10px;gap:4px}
+    .player-name{font-size:.85rem}
+    .player-avatar{font-size:1.2rem}
+    .level-badge{font-size:.6rem;padding:2px 7px}
+    .coin-count{font-size:1rem;padding:2px 6px}
+    .exercise-title{font-size:.95rem}
+    .back-btn{padding:6px 10px;font-size:.85rem}
+
+    /* Map */
+    .map-title h2{font-size:1.15rem}
+    .map-title p{font-size:.85rem}
+    .map-grid{gap:10px;padding:12px 10px}
+    .map-station{padding:14px 8px;gap:6px}
+    .station-icon{font-size:2rem;width:56px;height:56px}
+    .station-name{font-size:.95rem}
+    .station-stars{font-size:.8rem}
+    .map-bottom-nav{padding:8px 10px;gap:8px}
+    .map-nav-btn{padding:10px 20px;font-size:.85rem}
+    .map-nav-btn span:first-child{font-size:1.2rem}
+
+    /* Daily challenge */
+    .daily-challenge{padding:10px 12px;margin:6px 10px;gap:8px}
+    .daily-icon{font-size:1.4rem}
+    .daily-text h3{font-size:.85rem}
+    .daily-text p{font-size:.7rem}
+    .daily-reward{font-size:.75rem;padding:3px 8px}
+
+    /* Streak calendar */
+    .streak-section{padding:0 10px 8px}
+    .streak-day{width:24px;height:24px;font-size:.55rem}
+    .streak-header h3{font-size:.85rem}
+
+    /* XP bar */
+    .map-xp-bar{padding:3px 10px}
+    .xp-text{font-size:.6rem;min-width:50px}
+
+    /* Exercises */
+    .exercise-visual{min-height:90px;padding:10px}
+    .exercise-question{font-size:1.8rem;padding:10px 16px}
+    .number-buttons{grid-template-columns:repeat(4,1fr)!important;gap:8px;max-width:280px;padding:8px}
+    .num-btn{height:54px;font-size:1.3rem}
+    .compare-btn{padding:12px 16px;min-width:65px}
+    .compare-symbol{font-size:1.8rem}
+    .compare-label{font-size:.75rem}
+    .counting-grid{gap:6px;max-width:260px}
+    .count-item{font-size:1.8rem}
+    .groups-visual{gap:8px}
+    .group-a,.group-b{padding:6px;max-width:120px;gap:4px}
+    .operator{font-size:1.8rem}
+    .compare-number{font-size:2.2rem;width:56px;height:56px}
+    .compare-dots{max-width:70px;font-size:.7rem}
+    .compare-question{font-size:1.8rem}
+
+    /* Power-ups */
+    .powerups-bar{gap:4px;padding:3px 8px}
+    .powerup-btn{padding:4px 8px;font-size:.65rem;gap:3px}
+    .powerup-btn .pu-icon{font-size:.9rem}
+
+    /* Progress */
+    .exercise-progress{padding:4px 10px}
+    .progress-track{height:10px}
+    .progress-text{font-size:.75rem;min-width:40px}
+    .progress-dots{gap:3px;padding:3px 10px}
+    .progress-dot{width:8px;height:8px}
+
+    /* Hearts */
+    .heart{font-size:.9rem}
+
+    /* Feedback */
+    .exercise-feedback{font-size:1.2rem;padding:8px;min-height:44px}
+
+    /* Session complete */
+    .session-complete{padding:16px;gap:16px}
+    .session-stats{gap:16px}
+    .stat-item{padding:10px 16px}
+    .stat-value{font-size:1.6rem}
+    .stat-label{font-size:.75rem}
+    .session-buttons{gap:8px}
+    .session-buttons .btn-primary,.session-buttons .btn-secondary,.session-buttons .btn-accent{padding:10px 18px;font-size:.95rem}
+
+    /* Shop */
+    .shop-grid{grid-template-columns:repeat(2,1fr);gap:10px;padding:10px}
+    .shop-item{padding:10px 6px;gap:4px}
+    .shop-item-emoji{font-size:1.8rem}
+    .shop-item-img{width:44px;height:44px}
+    .shop-item-name{font-size:.8rem}
+    .shop-item-price{font-size:.8rem}
+    .shop-buy-btn{padding:5px 10px;font-size:.75rem}
+    .shop-tabs{padding:6px 10px;gap:6px}
+    .shop-tab{padding:5px 12px;font-size:.75rem}
+
+    /* House */
+    .bakery-bg{aspect-ratio:3/4}
+    .bakery-sign{font-size:.6rem;padding:3px 10px}
+    .placed-item-name{font-size:.5rem}
+    .slot-label{font-size:.5rem}
+    .house-tray{padding:6px 10px}
+    .house-tray h3{font-size:.9rem}
+    .house-inventory{min-height:56px;gap:6px}
+    .inventory-item{padding:6px 8px}
+    .inv-emoji{font-size:1.2rem}
+    .inv-name{font-size:.6rem}
+    .inv-item-img{width:28px;height:28px}
+
+    /* Modals */
+    .modal-content{padding:20px;max-width:290px}
+    .modal-emoji{font-size:2.5rem}
+    .modal-price{font-size:1.1rem}
+
+    /* Achievements */
+    .achievements-card{padding:16px;max-width:340px}
+    .badge-grid{grid-template-columns:repeat(3,1fr);gap:8px}
+    .badge{padding:8px 4px}
+    .badge-icon{font-size:1.5rem}
+    .badge-name{font-size:.6rem}
+    .badge-desc{font-size:.5rem}
+    .achievements-btn{top:52px;padding:4px 8px;font-size:.7rem}
+
+    /* Tikki */
+    .tikki{font-size:2rem;bottom:12px;right:12px}
+    .tikki-img{width:40px;height:40px}
+    .tikki-bubble{bottom:58px;right:8px;font-size:.8rem;max-width:140px;padding:6px 10px}
+    .sound-toggle{width:38px;height:38px;font-size:1.1rem;bottom:10px;left:10px}
+
+    /* Combo display */
+    .combo-display{top:85px;font-size:.9rem;padding:4px 14px}
+
+    /* Speed banner */
+    .speed-banner{padding:6px 12px;font-size:.8rem}
+
+    /* Overlays — full width */
+    .story-card{padding:20px;max-width:320px}
+    .story-character{font-size:3rem}
+    .story-text{font-size:1rem}
+    .wheel-card{padding:20px;max-width:300px}
+    .wheel-container{width:180px;height:180px}
+    .wheel-circle{width:180px;height:180px}
+    .onboard-card{padding:20px}
+    .onboard-text{font-size:1rem}
+
+    /* Unlock toast */
+    .unlock-toast{padding:14px 24px;font-size:1.1rem}
+    .unlock-toast span{font-size:1.6rem}
+}
+
+/* === SMALL PHONES (≤ 360px) === */
+@media(max-width:360px){
+    .welcome-logo h1{font-size:1.4rem}
+    .welcome-character{width:90px;height:90px}
+    .btn-hero{padding:12px 24px;font-size:1rem}
+    .map-grid{grid-template-columns:repeat(2,1fr);gap:8px;padding:8px}
+    .map-station{padding:10px 6px}
+    .station-icon{font-size:1.6rem;width:48px;height:48px}
+    .station-name{font-size:.85rem}
+    .number-buttons{max-width:250px;gap:6px}
+    .num-btn{height:48px;font-size:1.1rem}
+    .exercise-question{font-size:1.5rem;padding:8px 12px}
+    .compare-btn{padding:10px 12px;min-width:55px}
+    .compare-symbol{font-size:1.5rem}
+    .shop-grid{gap:8px;padding:8px}
+    .map-bottom-nav{gap:6px}
+    .map-nav-btn{padding:8px 14px;font-size:.8rem}
+    .daily-challenge{flex-wrap:wrap;justify-content:center;text-align:center}
+    .bakery-bg{aspect-ratio:2/3}
+}
+
+/* === TABLETS (481px — 768px) === */
+@media(min-width:481px) and (max-width:768px){
+    .welcome-character{width:160px;height:160px}
+    .welcome-logo h1{font-size:2.2rem}
+    .map-grid{max-width:480px;gap:16px}
+    .map-station{padding:20px 14px}
+    .station-icon{font-size:2.8rem;width:78px;height:78px}
+    .number-buttons{max-width:380px;gap:12px}
+    .num-btn{height:68px;font-size:1.6rem;border-radius:var(--radius-lg)}
+    .exercise-question{font-size:2.2rem}
+    .shop-grid{grid-template-columns:repeat(3,1fr);max-width:520px}
+    .bakery-bg{max-width:520px}
+    .exercise-visual{max-width:460px}
+    .compare-btn{padding:18px 28px;min-width:95px}
+    .compare-symbol{font-size:2.4rem}
+    .session-stats{gap:24px}
+}
+
+/* === LARGE TABLETS (769px — 1024px) === */
+@media(min-width:769px) and (max-width:1024px){
+    .welcome-character{width:180px;height:180px}
+    .welcome-logo h1{font-size:2.6rem}
+    .map-grid{max-width:600px;gap:20px}
+    .map-station{padding:24px 18px}
+    .station-icon{font-size:3rem;width:88px;height:88px}
+    .station-name{font-size:1.2rem}
+    .number-buttons{max-width:420px;gap:14px}
+    .num-btn{height:74px;font-size:1.7rem}
+    .exercise-question{font-size:2.6rem;padding:16px 32px}
+    .exercise-visual{max-width:500px;min-height:160px}
+    .shop-grid{grid-template-columns:repeat(3,1fr);max-width:600px}
+    .shop-item{padding:18px 12px}
+    .shop-item-emoji{font-size:2.6rem}
+    .shop-item-img{width:64px;height:64px}
+    .bakery-bg{max-width:600px;aspect-ratio:4/3}
+    .map-bottom-nav{gap:20px}
+    .map-nav-btn{padding:16px 40px;font-size:1.1rem}
+    .compare-btn{padding:20px 32px;min-width:105px}
+    .compare-symbol{font-size:2.6rem}
+    .achievements-card{max-width:500px}
+    .badge-grid{grid-template-columns:repeat(4,1fr)}
+    .modal-content{max-width:400px;padding:32px}
+}
+
+/* === LANDSCAPE on phones — compact vertical layout === */
+@media(max-height:500px) and (orientation:landscape){
+    .welcome-content{padding:12px}
+    .welcome-character{width:70px;height:70px}
+    .welcome-logo h1{font-size:1.3rem}
+    .welcome-logo h2{font-size:.9rem}
+    .logo-ladybug{font-size:2.5rem}
+    .btn-hero{padding:10px 24px;font-size:1rem}
+
+    .map-header,.exercise-header,.shop-header,.house-header{padding:4px 10px}
+    .map-title{padding:4px 10px 0}
+    .map-title h2{font-size:1rem}
+    .map-grid{gap:8px;padding:8px;grid-template-columns:repeat(4,1fr);max-width:700px}
+    .map-station{padding:8px 6px;gap:4px}
+    .station-icon{font-size:1.4rem;width:40px;height:40px}
+    .station-name{font-size:.75rem}
+    .map-bottom-nav{padding:4px 8px}
+    .map-nav-btn{padding:6px 16px;font-size:.8rem}
+    .map-nav-btn span:first-child{font-size:1rem}
+    .daily-challenge{margin:4px 10px;padding:6px 10px}
+    .streak-section{padding:0 10px 4px}
+    .streak-day{width:22px;height:22px;font-size:.5rem}
+    .map-xp-bar{padding:2px 10px}
+
+    .exercise-visual{min-height:60px;padding:6px}
+    .exercise-question{font-size:1.5rem;padding:6px 16px}
+    .number-buttons{max-width:320px;gap:6px;padding:4px}
+    .num-btn{height:44px;font-size:1.1rem}
+    .exercise-progress{padding:2px 10px}
+    .progress-track{height:8px}
+    .powerups-bar{padding:2px 8px}
+    .exercise-feedback{font-size:1rem;padding:4px;min-height:32px}
+    .exercise-content{padding:6px;gap:6px}
+    .counting-grid{gap:4px;max-width:300px}
+    .count-item{font-size:1.4rem}
+    .compare-btn{padding:8px 14px;min-width:55px}
+    .compare-symbol{font-size:1.5rem}
+    .compare-number{font-size:1.8rem;width:48px;height:48px}
+    .progress-dots{padding:2px 10px}
+
+    .shop-grid{grid-template-columns:repeat(4,1fr);gap:8px;padding:8px}
+    .shop-tabs{padding:4px 8px}
+
+    .bakery-bg{aspect-ratio:16/9;max-width:500px}
+    .house-tray{padding:4px 8px}
+    .house-inventory{min-height:44px}
+
+    .tikki{font-size:1.5rem;bottom:8px;right:8px}
+    .tikki-img{width:32px;height:32px}
+    .tikki-bubble{bottom:44px;font-size:.7rem;max-width:120px}
+    .sound-toggle{width:32px;height:32px;font-size:1rem;bottom:8px;left:8px}
+    .combo-display{top:60px;font-size:.8rem}
+    .achievements-btn{top:40px;font-size:.65rem}
+
+    .session-complete{padding:10px;gap:10px}
+    .celebration-emoji{font-size:2rem}
+    .stat-item{padding:6px 12px}
+    .stat-value{font-size:1.3rem}
 }
     </style>
 </head>
