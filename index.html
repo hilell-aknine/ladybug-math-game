@@ -66,7 +66,7 @@ input[type="text"]:focus{border-color:var(--lb-red);box-shadow:var(--shadow-glow
 /* Modal */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center;padding:var(--gap-md)}
 .modal-overlay.active{display:flex}
-.modal-content{background:#fff;border-radius:var(--radius-lg);padding:var(--gap-xl);text-align:center;max-width:340px;width:100%;box-shadow:var(--shadow-lg)}
+.modal-content{background:#fff;border-radius:var(--radius-lg);padding:var(--gap-xl);text-align:center;max-width:380px;width:100%;box-shadow:var(--shadow-lg)}
 .modal-emoji{font-size:3rem;margin-bottom:var(--gap-md)}.modal-price{font-size:1.3rem;margin:var(--gap-md) 0;font-weight:600}
 .modal-buttons{display:flex;gap:var(--gap-md);justify-content:center;margin-top:var(--gap-lg)}
 
@@ -211,47 +211,98 @@ input[type="text"]:focus{border-color:var(--lb-red);box-shadow:var(--shadow-glow
 /* === SHOP === */
 #screen-shop{background:linear-gradient(180deg,var(--lb-pink-light) 0%,var(--lb-cream) 50%)}
 .shop-title{font-size:1.2rem}
-.shop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap-md);padding:var(--gap-md);overflow-y:auto;flex:1 0 auto;max-width:500px;margin:0 auto;width:100%}
-.shop-item{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;background:linear-gradient(180deg,#fff,#FAFAFA);border-radius:var(--radius-lg);box-shadow:0 2px 12px rgba(0,0,0,.06);border:2px solid rgba(255,182,193,.2);transition:transform .2s cubic-bezier(.4,0,.2,1),border-color .2s,box-shadow .2s}
-.shop-item:not(.owned):not(.too-expensive):hover{transform:translateY(-4px);box-shadow:0 6px 20px rgba(0,0,0,.12)}
-.shop-item:not(.owned):not(.too-expensive):hover{border-color:var(--lb-gold)}
+.shop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap-md);padding:var(--gap-md);overflow-y:auto;flex:1 0 auto;max-width:520px;margin:0 auto;width:100%;transition:opacity .15s ease}
+.shop-grid.fading{opacity:0}
+.shop-item{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px 10px 14px;background:linear-gradient(180deg,#fff,#FAFAFA);border-radius:var(--radius-lg);box-shadow:0 2px 12px rgba(0,0,0,.06);border:2px solid rgba(255,182,193,.2);transition:transform .2s cubic-bezier(.4,0,.2,1),border-color .2s,box-shadow .2s;overflow:hidden}
+.shop-item::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:var(--lb-pink);z-index:1}
+.shop-item.cat-bakery::before{background:linear-gradient(90deg,#FF6B6B,#E43B3B)}
+.shop-item.cat-furniture::before{background:linear-gradient(90deg,#A1887F,#6D4C41)}
+.shop-item.cat-decoration::before{background:linear-gradient(90deg,#F48FB1,#CE93D8)}
+.shop-item:not(.owned):not(.too-expensive):hover{transform:translateY(-4px);box-shadow:0 6px 20px rgba(0,0,0,.12);border-color:var(--lb-gold)}
 .shop-item.owned{border-color:var(--lb-green);background:#E8F5E9}
-.shop-item.too-expensive{opacity:.55}
-.shop-item-emoji{font-size:2.2rem}
-.shop-item-name{font-size:.9rem;font-weight:600;white-space:nowrap}
-.shop-item-price{display:flex;align-items:center;gap:4px;font-size:.9rem;font-weight:700;color:var(--lb-gold-dark)}
-.shop-item-owned{color:var(--lb-green);font-weight:700;font-size:.85rem}
-.shop-buy-btn{padding:6px 14px;font-size:.85rem;font-weight:700;font-family:inherit;color:#fff;background:var(--lb-red);border:none;border-radius:var(--radius-sm);cursor:pointer;transition:transform .1s}
-.shop-buy-btn:disabled{background:#ccc;color:#888;cursor:default;font-size:.7rem}
+.shop-item.owned-placed{border-color:var(--lb-green);background:linear-gradient(180deg,#E8F5E9,#C8E6C9)}
+.shop-item.too-expensive{opacity:.7}
+.shop-item-img{width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.15))}
+.shop-item-emoji{font-size:2.4rem}
+.shop-item-name{font-size:1rem;font-weight:700;white-space:nowrap;color:var(--lb-black)}
+.shop-item-price{display:inline-flex;align-items:center;gap:4px;font-size:.95rem;font-weight:700;color:var(--lb-gold-dark);background:linear-gradient(135deg,#FFF8E7,#FFE082);padding:3px 10px;border-radius:var(--radius-sm);box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+.shop-status-tag{display:inline-flex;align-items:center;gap:4px;font-size:.75rem;font-weight:700;padding:3px 8px;border-radius:var(--radius-sm);margin-top:2px}
+.shop-status-tag.in-house{background:#C8E6C9;color:#2E7D32}
+.shop-status-tag.in-inv{background:#FFE0B2;color:#E65100}
+.shop-buy-btn{padding:7px 16px;font-size:.9rem;font-weight:700;font-family:inherit;color:#fff;background:linear-gradient(135deg,var(--lb-red),var(--lb-red-dark));border:none;border-radius:var(--radius-md);cursor:pointer;transition:transform .1s;box-shadow:0 2px 6px rgba(228,59,59,.3)}
 .shop-buy-btn:not(:disabled):active{transform:scale(.95)}
-.purchase-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--lb-green);color:#fff;padding:12px 24px;border-radius:var(--radius-md);font-weight:600;font-size:1.1rem;z-index:200;animation:toastSlideUp 2s ease forwards;display:flex;align-items:center;gap:var(--gap-sm);box-shadow:var(--shadow-md)}
+.shop-place-btn{padding:5px 12px;font-size:.78rem;font-weight:700;font-family:inherit;color:#fff;background:linear-gradient(135deg,var(--lb-green),#2E7D32);border:none;border-radius:var(--radius-sm);cursor:pointer;transition:transform .1s;margin-top:2px}
+.shop-place-btn:active{transform:scale(.95)}
+.shop-need-badge{display:inline-flex;align-items:center;gap:3px;font-size:.78rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#FF9800,#F57C00);padding:4px 10px;border-radius:var(--radius-sm);box-shadow:0 1px 3px rgba(255,152,0,.3)}
+.shop-need-cta{padding:4px 10px;font-size:.7rem;font-weight:600;font-family:inherit;color:var(--lb-black);background:#fff;border:1.5px solid var(--lb-pink);border-radius:var(--radius-sm);cursor:pointer;margin-top:3px;transition:transform .1s}
+.shop-need-cta:active{transform:scale(.95)}
+.shop-empty-msg{grid-column:1/-1;text-align:center;padding:32px 16px;font-size:1.1rem;font-weight:600;color:var(--lb-green);background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border-radius:var(--radius-lg);border:2px dashed var(--lb-green)}
+.shop-empty-msg .emoji{display:block;font-size:2.5rem;margin-bottom:8px}
+.purchase-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--lb-green);color:#fff;padding:12px 18px;border-radius:var(--radius-md);font-weight:600;font-size:1rem;z-index:200;animation:toastSlideUp 4s ease forwards;display:flex;align-items:center;gap:var(--gap-sm);box-shadow:var(--shadow-md);max-width:320px}
+.purchase-toast .toast-place-btn{padding:5px 12px;font-size:.85rem;font-weight:700;font-family:inherit;color:var(--lb-green);background:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;white-space:nowrap}
+.modal-slot-hint{display:flex;align-items:center;justify-content:center;gap:6px;font-size:.95rem;color:var(--lb-black-light);background:#FFF8E7;padding:8px 14px;border-radius:var(--radius-md);margin:12px 0;border:1.5px dashed var(--lb-gold-dark)}
 
 /* === HOUSE === */
 #screen-house{background:linear-gradient(180deg,#87CEEB 0%,var(--lb-cream) 40%)}
 .house-title{font-size:1.2rem}
+/* Progress bar under header */
+.house-progress{display:flex;align-items:center;gap:10px;padding:8px 16px;background:linear-gradient(135deg,#FFF8E7,#FFE082);border-bottom:2px solid rgba(255,182,193,.3);flex-shrink:0}
+.hp-track{flex:1;height:14px;background:#fff;border-radius:7px;overflow:hidden;border:1.5px solid var(--lb-gold-dark);box-shadow:inset 0 1px 3px rgba(0,0,0,.1)}
+.hp-fill{height:100%;background:linear-gradient(90deg,var(--lb-gold),var(--lb-gold-dark),#FF9800);border-radius:6px;transition:width .5s cubic-bezier(.4,0,.2,1);width:0%;box-shadow:0 0 8px rgba(255,215,0,.4)}
+.hp-fill.complete{background:linear-gradient(90deg,#4CAF50,#2E7D32,var(--lb-gold));animation:hpComplete 1.5s infinite}
+@keyframes hpComplete{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
+.hp-text{font-size:.85rem;font-weight:700;color:var(--lb-black);white-space:nowrap;display:flex;align-items:center;gap:4px}
 .house-view{flex:1 0 auto;display:flex;align-items:center;justify-content:center;padding:var(--gap-md);min-height:0}
-.bakery-bg{width:100%;max-width:500px;aspect-ratio:4/3;background:linear-gradient(180deg,#87CEEB 0%,#87CEEB 15%,#FFECD2 15%,#FFF8E7 50%,#D4A574 90%,#8B6914 100%);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);position:relative;border:4px solid var(--lb-pink);overflow:hidden}
-/* Bakery roof */
-.bakery-bg::before{content:'';position:absolute;top:14%;left:0;right:0;height:8px;background:repeating-linear-gradient(90deg,var(--lb-red) 0,var(--lb-red) 20px,var(--lb-red-dark) 20px,var(--lb-red-dark) 40px);z-index:1}
+.bakery-bg{width:100%;max-width:520px;aspect-ratio:4/3;background-image:linear-gradient(180deg,rgba(255,248,231,.15),rgba(255,248,231,.1) 50%,rgba(255,248,231,.2)),url('assets/images/backgrounds/bakery.png');background-color:#FFF8E7;background-size:cover;background-position:center;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);position:relative;border:4px solid var(--lb-pink);overflow:hidden}
+.bakery-bg.no-bg-image{background-image:linear-gradient(180deg,#87CEEB 0%,#87CEEB 15%,#FFECD2 15%,#FFF8E7 50%,#D4A574 90%,#8B6914 100%)}
 /* Bakery sign */
-.bakery-sign{position:absolute;top:2%;left:50%;transform:translateX(-50%);background:var(--lb-red);color:#fff;padding:4px 16px;border-radius:var(--radius-sm);font-size:.7rem;font-weight:700;z-index:2;white-space:nowrap;box-shadow:var(--shadow-sm)}
-.house-slots{position:absolute;inset:0}
-.house-slot{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed var(--lb-pink);border-radius:var(--radius-sm);cursor:pointer;transition:background .2s,border-color .2s,transform .15s;font-size:.7rem;background:rgba(255,255,255,.3)}
-.house-slot.empty{background:rgba(255,182,193,.12)}
-.house-slot.empty.accepting{border-color:var(--lb-gold);background:rgba(255,215,0,.15);animation:pulseSlot 1s infinite}
-.house-slot.filled{border:2px solid var(--lb-green);background:rgba(255,255,255,.75)}
+.bakery-sign{position:absolute;top:2%;left:50%;transform:translateX(-50%);background:var(--lb-red);color:#fff;padding:5px 18px;border-radius:var(--radius-sm);font-size:.78rem;font-weight:700;z-index:5;white-space:nowrap;box-shadow:var(--shadow-md);border:2px solid #fff}
+.house-slots{position:absolute;inset:0;z-index:2}
+.house-slot{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed rgba(255,182,193,.8);border-radius:var(--radius-sm);cursor:pointer;transition:background .2s,border-color .2s,transform .15s,opacity .25s;font-size:.7rem;background:rgba(255,255,255,.45);backdrop-filter:blur(2px)}
+.house-slot.empty{background:rgba(255,182,193,.18)}
+.house-slot.empty.accepting{border-color:var(--lb-gold);border-style:solid;background:rgba(255,215,0,.28);animation:pulseSlot 1s infinite;box-shadow:0 0 14px rgba(255,215,0,.5)}
+.house-slot.dimmed{opacity:.35;filter:grayscale(.5)}
+.house-slot.filled{border:2px solid var(--lb-green);background:rgba(255,255,255,.85);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.house-slot.filled:hover{box-shadow:0 4px 14px rgba(76,175,80,.4);transform:translateY(-2px)}
+.house-slot.just-placed{animation:snapIn .55s cubic-bezier(.34,1.56,.64,1)}
 .house-slot:active{transform:scale(.95)}
-.placed-item-emoji{font-size:1.6rem}.placed-item-name{font-size:.55rem;font-weight:600;color:var(--lb-black-light)}
-.slot-label{color:var(--lb-black-light);font-weight:500;opacity:.5;font-size:.6rem}
-.house-tray{background:#fff;border-top:2px solid var(--lb-pink);padding:var(--gap-sm) var(--gap-md);padding-bottom:calc(var(--gap-sm) + env(safe-area-inset-bottom,0px));flex-shrink:0}
-.house-tray h3{text-align:center;margin-bottom:var(--gap-sm);font-size:1rem;color:var(--lb-black)}
-.house-inventory{display:flex;gap:var(--gap-sm);overflow-x:auto;padding:var(--gap-sm) 0;min-height:70px;align-items:center;justify-content:center}
-.inventory-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:var(--gap-sm) 12px;background:var(--lb-cream);border:2px solid var(--lb-pink);border-radius:var(--radius-md);cursor:pointer;transition:transform .15s,border-color .15s;flex-shrink:0}
-.inventory-item.selected{border-color:var(--lb-gold);background:rgba(255,215,0,.15);box-shadow:var(--shadow-glow-gold);transform:scale(1.05)}
+@keyframes snapIn{0%{transform:scale(.2);opacity:.4}50%{transform:scale(1.18);opacity:1}80%{transform:scale(.95)}100%{transform:scale(1)}}
+.placed-item-img{width:80%;height:75%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(0,0,0,.2))}
+.placed-item-emoji{font-size:1.7rem}
+.placed-item-name{font-size:.55rem;font-weight:700;color:var(--lb-black);background:rgba(255,255,255,.85);padding:1px 5px;border-radius:3px;margin-top:1px}
+.slot-cat-badge{position:absolute;top:2px;right:2px;font-size:.85rem;background:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.2);z-index:1}
+.slot-label{color:var(--lb-black);font-weight:600;opacity:.7;font-size:.62rem;background:rgba(255,255,255,.6);padding:1px 5px;border-radius:3px}
+.house-tray{background:#fff;border-top:3px solid var(--lb-pink);padding:var(--gap-sm) var(--gap-md);padding-bottom:calc(var(--gap-sm) + env(safe-area-inset-bottom,0px));flex-shrink:0;box-shadow:0 -2px 8px rgba(0,0,0,.06)}
+.house-tray h3{text-align:center;margin-bottom:var(--gap-sm);font-size:1rem;color:var(--lb-black);font-weight:700}
+.house-inventory-wrap{position:relative}
+.house-inventory-wrap::before,.house-inventory-wrap::after{content:'';position:absolute;top:0;bottom:0;width:24px;pointer-events:none;z-index:2;opacity:0;transition:opacity .2s}
+.house-inventory-wrap.has-overflow::before,.house-inventory-wrap.has-overflow::after{opacity:1}
+.house-inventory-wrap::before{right:0;background:linear-gradient(270deg,#fff,transparent)}
+.house-inventory-wrap::after{left:0;background:linear-gradient(90deg,#fff,transparent)}
+.house-inventory{display:flex;gap:var(--gap-sm);overflow-x:auto;padding:var(--gap-sm) 4px;min-height:74px;align-items:center;scroll-behavior:smooth}
+.house-inventory.centered{justify-content:center}
+.inventory-item{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 12px;background:linear-gradient(180deg,#fff,var(--lb-cream));border:2px solid var(--lb-pink);border-radius:var(--radius-md);cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s;flex-shrink:0;min-width:64px}
+.inventory-item.selected{border-color:var(--lb-gold);background:linear-gradient(180deg,#FFF8E7,#FFE082);box-shadow:0 0 0 3px rgba(255,215,0,.4),0 4px 12px rgba(255,215,0,.3);transform:scale(1.08);animation:invPulse 1.2s infinite}
+@keyframes invPulse{0%,100%{box-shadow:0 0 0 3px rgba(255,215,0,.4),0 4px 12px rgba(255,215,0,.3)}50%{box-shadow:0 0 0 5px rgba(255,215,0,.6),0 6px 16px rgba(255,215,0,.5)}}
 .inventory-item:active{transform:scale(.95)}
-.inv-emoji{font-size:1.5rem}.inv-name{font-size:.7rem;font-weight:600}
-.empty-inventory{text-align:center;padding:var(--gap-md);color:var(--lb-black-light)}
-.empty-inventory p{margin-bottom:var(--gap-sm)}
+.inv-cat-badge{position:absolute;top:-6px;right:-6px;font-size:.85rem;background:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.25);border:1.5px solid var(--lb-pink)}
+.inv-item-img{width:42px;height:42px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,.15))}
+.inv-emoji{font-size:1.6rem}
+.inv-name{font-size:.72rem;font-weight:700;color:var(--lb-black)}
+.empty-inventory{text-align:center;padding:var(--gap-md);color:var(--lb-black-light);width:100%}
+.empty-inventory p{margin-bottom:var(--gap-sm);font-weight:600}
+/* House action modal — buttons stack vertically for clarity */
+.house-action-modal .modal-buttons{flex-direction:column;gap:var(--gap-sm)}
+.house-action-modal .modal-buttons button{width:100%}
+.btn-warn{padding:12px 24px;font-size:1.05rem;font-weight:600;font-family:inherit;color:#fff;background:linear-gradient(135deg,#FF9800,#F57C00);border:none;border-radius:var(--radius-md);cursor:pointer;transition:transform .15s}
+.btn-warn:active{transform:scale(.95)}
+.btn-danger{padding:12px 24px;font-size:1.05rem;font-weight:600;font-family:inherit;color:#fff;background:linear-gradient(135deg,#EF5350,#C62828);border:none;border-radius:var(--radius-md);cursor:pointer;transition:transform .15s}
+.btn-danger:active{transform:scale(.95)}
+/* Bakery completion modal */
+.bakery-complete-modal .modal-content{background:linear-gradient(135deg,#FFF8E7 0%,#FFE082 100%);border:4px solid var(--lb-gold);max-width:380px}
+.bakery-complete-modal .complete-emoji{font-size:5rem;animation:bob 2s infinite ease-in-out}
+.bakery-complete-modal .complete-title{font-size:1.5rem;font-weight:800;color:var(--lb-red);margin:8px 0}
+.bakery-complete-modal .complete-sub{font-size:1rem;color:var(--lb-black);margin-bottom:16px}
 
 /* === ANIMATIONS === */
 @keyframes screenFadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -577,32 +628,44 @@ button,input,.map-station,.shop-item,.inventory-item,.house-slot,.daily-challeng
 
     /* Shop */
     .shop-grid{grid-template-columns:repeat(2,1fr);gap:10px;padding:10px}
-    .shop-item{padding:10px 6px;gap:4px}
-    .shop-item-emoji{font-size:1.8rem}
-    .shop-item-img{width:44px;height:44px}
-    .shop-item-name{font-size:.8rem}
-    .shop-item-price{font-size:.8rem}
-    .shop-buy-btn{padding:5px 10px;font-size:.75rem}
+    .shop-item{padding:14px 8px 12px;gap:5px}
+    .shop-item-emoji{font-size:2rem}
+    .shop-item-img{width:54px;height:54px}
+    .shop-item-name{font-size:.92rem}
+    .shop-item-price{font-size:.85rem;padding:2px 8px}
+    .shop-buy-btn{padding:6px 14px;font-size:.85rem}
+    .shop-place-btn{padding:4px 10px;font-size:.72rem}
+    .shop-status-tag{font-size:.7rem;padding:2px 6px}
+    .shop-need-badge{font-size:.72rem;padding:3px 8px}
+    .shop-need-cta{font-size:.65rem;padding:3px 8px}
     .shop-tabs{padding:6px 10px;gap:6px}
     .shop-tab{padding:5px 12px;font-size:.75rem}
+    .modal-slot-hint{font-size:.85rem;padding:6px 10px}
 
     /* House */
+    .house-progress{padding:6px 12px;gap:8px}
+    .hp-track{height:12px}
+    .hp-text{font-size:.78rem}
     .bakery-bg{aspect-ratio:3/4}
-    .bakery-sign{font-size:.6rem;padding:3px 10px}
+    .bakery-sign{font-size:.65rem;padding:3px 12px}
     .placed-item-name{font-size:.5rem}
-    .slot-label{font-size:.5rem}
+    .slot-label{font-size:.55rem;padding:1px 4px}
+    .slot-cat-badge{width:16px;height:16px;font-size:.7rem}
     .house-tray{padding:6px 10px}
     .house-tray h3{font-size:.9rem}
-    .house-inventory{min-height:56px;gap:6px}
-    .inventory-item{padding:6px 8px}
-    .inv-emoji{font-size:1.2rem}
-    .inv-name{font-size:.6rem}
-    .inv-item-img{width:28px;height:28px}
+    .house-inventory{min-height:62px;gap:6px;padding:6px 4px}
+    .inventory-item{padding:6px 10px;min-width:54px}
+    .inv-emoji{font-size:1.3rem}
+    .inv-name{font-size:.65rem}
+    .inv-item-img{width:34px;height:34px}
+    .inv-cat-badge{width:18px;height:18px;font-size:.7rem;top:-5px;right:-5px}
 
     /* Modals */
-    .modal-content{padding:20px;max-width:290px}
+    .modal-content{padding:20px;max-width:320px}
     .modal-emoji{font-size:2.5rem}
     .modal-price{font-size:1.1rem}
+    .bakery-complete-modal .complete-emoji{font-size:4rem}
+    .bakery-complete-modal .complete-title{font-size:1.25rem}
 
     /* Achievements */
     .achievements-card{padding:16px;max-width:340px}
@@ -909,16 +972,23 @@ button,input,.map-station,.shop-item,.inventory-item,.house-slot,.daily-challeng
             <h2 class="house-title">🏠 הבית של מרינט</h2>
             <div class="header-left"><span class="coin-icon">🪙</span><span id="house-coins" class="global-coins coin-count">0</span></div>
         </div>
+        <div class="house-progress">
+            <span class="hp-text" id="hp-text">✨ 0/12 פריטים</span>
+            <div class="hp-track"><div class="hp-fill" id="hp-fill"></div></div>
+        </div>
         <div class="house-view">
-            <div class="bakery-bg">
+            <div class="bakery-bg" id="bakery-bg">
                 <div class="bakery-sign">🥐 המאפייה של דופיין-צ'נג 🥐</div>
                 <div id="house-slots" class="house-slots"></div>
             </div>
         </div>
         <div class="house-tray">
-            <h3>📦 הפריטים שלי</h3>
-            <div id="house-inventory" class="house-inventory"></div>
+            <h3 id="house-tray-title">📦 הפריטים שלי</h3>
+            <div class="house-inventory-wrap" id="house-inv-wrap">
+                <div id="house-inventory" class="house-inventory"></div>
+            </div>
         </div>
+        <div id="house-modal" class="modal-overlay"><div id="house-modal-content" class="modal-content"></div></div>
     </section>
 
 <script>
@@ -931,7 +1001,7 @@ function load(){try{const r=localStorage.getItem(SK);return r?JSON.parse(r):null
 function save(s){try{localStorage.setItem(SK,JSON.stringify(s))}catch{}}
 
 // ===== STATE =====
-const DEF={player:{name:'',coins:0,totalCoinsEarned:0,stars:0},progress:{counting:{completed:0,bestStreak:0,unlocked:true},addition:{completed:0,bestStreak:0,unlocked:true},subtraction:{completed:0,bestStreak:0,unlocked:false},comparison:{completed:0,bestStreak:0,unlocked:false}},shop:{purchasedItems:[]},house:{placedItems:{}},session:{currentStreak:0,currentExerciseType:null,currentRound:0,roundsPerSession:10,sessionCoins:0},settings:{soundEnabled:true}};
+const DEF={player:{name:'',coins:0,totalCoinsEarned:0,stars:0},progress:{counting:{completed:0,bestStreak:0,unlocked:true},addition:{completed:0,bestStreak:0,unlocked:true},subtraction:{completed:0,bestStreak:0,unlocked:false},comparison:{completed:0,bestStreak:0,unlocked:false}},shop:{purchasedItems:[]},house:{placedItems:{},completed:false},session:{currentStreak:0,currentExerciseType:null,currentRound:0,roundsPerSession:10,sessionCoins:0},settings:{soundEnabled:true}};
 let S=null;const L=[];
 function initState(){const sv=load();S=sv?{...DEF,...sv}:structuredClone(DEF);S.progress={...DEF.progress,...S.progress};S.session={...DEF.session};S.settings=S.settings||{soundEnabled:true};notify()}
 function G(){return S}
@@ -939,7 +1009,13 @@ function U(p,v){const k=p.split('.');let o=S;for(let i=0;i<k.length-1;i++)o=o[k[
 function addCoins(n){S.player.coins+=n;S.player.totalCoinsEarned+=n;S.session.sessionCoins+=n;save(S);notify()}
 function spendCoins(n){if(S.player.coins>=n){S.player.coins-=n;save(S);notify();return true}return false}
 function purchaseItem(id){if(!S.shop.purchasedItems.includes(id)){S.shop.purchasedItems.push(id);save(S);notify()}}
-function placeItem(sl,id){S.house.placedItems[sl]=id;save(S);notify()}
+function placeItem(sl,id){
+    S.house.placedItems[sl]=id;save(S);notify();
+    if(Object.keys(S.house.placedItems).length>=SLOTS.length&&!S.house.completed){
+        S.house.completed=true;save(S);
+        setTimeout(()=>{showBakeryComplete()},650);
+    }
+}
 function removeItem(sl){delete S.house.placedItems[sl];save(S);notify()}
 function checkUnlocks(){
     let unlocked=null;
@@ -1074,18 +1150,25 @@ const CATALOG=[
     {id:'rug',name:'שטיח',price:15,emoji:'🟥',category:'decoration',slot:'floor'},
 ];
 const SLOTS=[
-    {id:'kitchen-1',label:'מטבח',x:8,y:25,w:18,h:22,accepts:'bakery'},
-    {id:'counter-1',label:'דלפק',x:28,y:30,w:16,h:18,accepts:'bakery'},
-    {id:'counter-2',label:'דלפק',x:46,y:30,w:16,h:18,accepts:'bakery'},
-    {id:'dining-1',label:'שולחן',x:64,y:35,w:16,h:20,accepts:'furniture'},
-    {id:'dining-2',label:'כיסא',x:82,y:35,w:12,h:20,accepts:'furniture'},
-    {id:'wall-1',label:'קיר',x:12,y:5,w:14,h:14,accepts:'decoration'},
-    {id:'wall-2',label:'קיר',x:52,y:5,w:14,h:14,accepts:'decoration'},
-    {id:'window-1',label:'חלון',x:32,y:2,w:16,h:16,accepts:'decoration'},
-    {id:'sofa-1',label:'ספה',x:66,y:60,w:22,h:16,accepts:'decoration'},
-    {id:'floor-1',label:'רצפה',x:28,y:68,w:28,h:12,accepts:'decoration'},
-    {id:'living-1',label:'סלון',x:74,y:8,w:14,h:14,accepts:'decoration'},
+    {id:'kitchen-1',label:'מטבח',x:6,y:25,w:18,h:22,accepts:'bakery'},
+    {id:'counter-1',label:'דלפק',x:26,y:32,w:14,h:16,accepts:'bakery'},
+    {id:'counter-2',label:'דלפק',x:42,y:32,w:14,h:16,accepts:'bakery'},
+    {id:'counter-3',label:'מדף',x:8,y:52,w:18,h:14,accepts:'bakery'},
+    {id:'dining-1',label:'שולחן',x:60,y:36,w:14,h:18,accepts:'furniture'},
+    {id:'dining-2',label:'כיסא',x:76,y:36,w:12,h:18,accepts:'furniture'},
+    {id:'wall-1',label:'קיר',x:10,y:4,w:14,h:14,accepts:'decoration'},
+    {id:'wall-2',label:'קיר',x:50,y:4,w:14,h:14,accepts:'decoration'},
+    {id:'window-1',label:'חלון',x:30,y:3,w:16,h:16,accepts:'decoration'},
+    {id:'living-1',label:'סלון',x:72,y:6,w:14,h:14,accepts:'decoration'},
+    {id:'sofa-1',label:'ספה',x:62,y:62,w:22,h:14,accepts:'decoration'},
+    {id:'floor-1',label:'רצפה',x:30,y:70,w:28,h:10,accepts:'decoration'},
 ];
+
+// ===== CATEGORY HELPERS =====
+const CAT_HE={bakery:'מאפייה',furniture:'רהיטים',decoration:'קישוט'};
+const CAT_EMOJI={bakery:'🥐',furniture:'🪑',decoration:'🎨'};
+function categoryHebrew(c){return CAT_HE[c]||c}
+function categoryEmoji(c){return CAT_EMOJI[c]||'📦'}
 
 // ===== SCREEN ROUTER =====
 function showScreen(id){
@@ -1549,6 +1632,7 @@ const BADGES=[
     {id:'streak-10',name:'בלתי ניתן לעצירה',desc:'רצף של 10 נכונות',icon:'💥',check:s=>Object.values(s.progress).some(p=>p.bestStreak>=10)},
     {id:'first-buy',name:'קניה ראשונה',desc:'קנו פריט בחנות',icon:'🛍️',check:s=>s.shop.purchasedItems.length>=1},
     {id:'furnished',name:'מעצב פנים',desc:'הציבו 5 פריטים בבית',icon:'🏠',check:s=>Object.keys(s.house.placedItems).length>=5},
+    {id:'bakery-master',name:'אדריכל המאפייה',desc:'הציבו את כל 12 הפריטים',icon:'🏆',check:s=>Object.keys(s.house.placedItems).length>=12},
     {id:'unlock-sub',name:'פורץ דרך',desc:'פתחו את החיסור',icon:'🔓',check:s=>s.progress.subtraction.unlocked},
     {id:'unlock-comp',name:'מתמטיקאי',desc:'פתחו את גדול/קטן',icon:'⚖️',check:s=>s.progress.comparison.unlocked},
     {id:'rich',name:'עשיר',desc:'צברו 50 מטבעות סה"כ',icon:'💰',check:s=>s.player.totalCoinsEarned>=50},
@@ -1706,57 +1790,235 @@ function updateLevelUI(s){
 
 // ===== SHOP =====
 let shopFilter='all';
+function getCatTabCount(s,cat){
+    const items=cat==='all'?CATALOG:CATALOG.filter(i=>i.category===cat);
+    return items.filter(i=>!s.shop.purchasedItems.includes(i.id)).length;
+}
+function updateShopTabs(s){
+    document.querySelectorAll('.shop-tab').forEach(tab=>{
+        const cat=tab.dataset.cat;
+        const cnt=getCatTabCount(s,cat);
+        const baseLabel=cat==='all'?'הכל':cat==='bakery'?'🥐 מאפייה':cat==='furniture'?'🪑 רהיטים':'🎨 קישוט';
+        tab.textContent=cnt>0?`${baseLabel} (${cnt})`:`${baseLabel} ✓`;
+    });
+}
 function renderShop(s){
     const grid=document.getElementById('shop-grid'),cd=document.getElementById('shop-coins');
     if(cd)cd.textContent=s.player.coins;
+    updateShopTabs(s);
     const items=shopFilter==='all'?CATALOG:CATALOG.filter(i=>i.category===shopFilter);
+    const placedSet=new Set(Object.values(s.house.placedItems));
+    const unowned=items.filter(i=>!s.shop.purchasedItems.includes(i.id));
+    if(items.length>0&&unowned.length===0){
+        grid.innerHTML=`<div class="shop-empty-msg"><span class="emoji">🎉</span>כל פריטי ${shopFilter==='all'?'החנות':categoryHebrew(shopFilter)} כבר אצלך!<br><span style="font-size:.9rem;opacity:.8">לך לבית כדי לסדר אותם</span></div>`;
+        return;
+    }
     grid.innerHTML=items.map(item=>{
-        const own=s.shop.purchasedItems.includes(item.id),can=s.player.coins>=item.price;
+        const own=s.shop.purchasedItems.includes(item.id);
+        const placed=placedSet.has(item.id);
+        const can=s.player.coins>=item.price;
+        const need=item.price-s.player.coins;
         const imgSrc=`assets/images/items/${item.id}.png`;
-        return `<div class="shop-item ${own?'owned':''} ${!can&&!own?'too-expensive':''}" data-id="${item.id}"><img class="shop-item-img" src="${imgSrc}" alt="${item.emoji}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="shop-item-emoji" style="display:none">${item.emoji}</div><div class="shop-item-name">${item.name}</div>${own?'<div class="shop-item-owned">✓ נקנה!</div>':`<div class="shop-item-price"><span class="coin-icon">🪙</span> ${item.price}</div><button class="shop-buy-btn" ${!can?'disabled':''}>${can?'קנה!':` ${item.price-s.player.coins} 🪙 חסר`}</button>`}</div>`;
+        let stateClass='';
+        if(own){stateClass=placed?'owned owned-placed':'owned'}
+        else if(!can){stateClass='too-expensive'}
+        let bottom='';
+        if(own){
+            bottom=placed
+                ?`<div class="shop-status-tag in-house">🏠 בבית</div>`
+                :`<div class="shop-status-tag in-inv">📦 במלאי</div><button class="shop-place-btn" data-action="place">← הצב עכשיו</button>`;
+        } else if(can){
+            bottom=`<div class="shop-item-price"><span class="coin-icon">🪙</span> ${item.price}</div><button class="shop-buy-btn" data-action="buy">קנה!</button>`;
+        } else {
+            bottom=`<div class="shop-item-price"><span class="coin-icon">🪙</span> ${item.price}</div><div class="shop-need-badge">🪙 חסר ${need}</div><button class="shop-need-cta" data-action="earn">💪 לתרגול</button>`;
+        }
+        return `<div class="shop-item cat-${item.category} ${stateClass}" data-id="${item.id}"><img class="shop-item-img" src="${imgSrc}" alt="${item.emoji}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="shop-item-emoji" style="display:none">${item.emoji}</div><div class="shop-item-name">${item.name}</div>${bottom}</div>`;
     }).join('');
-    grid.querySelectorAll('.shop-buy-btn:not([disabled])').forEach(btn=>{
+    grid.querySelectorAll('[data-action]').forEach(btn=>{
         const id=btn.closest('.shop-item').dataset.id;
-        btn.addEventListener('click',e=>{e.stopPropagation();buyItem(id)});
+        const action=btn.dataset.action;
+        btn.addEventListener('click',e=>{
+            e.stopPropagation();
+            playClick();
+            if(action==='buy')buyItem(id);
+            else if(action==='place')showScreen('screen-house');
+            else if(action==='earn')showScreen('screen-map');
+        });
     });
 }
 function buyItem(id){
     const item=CATALOG.find(i=>i.id===id);if(!item)return;
+    const slot=SLOTS.find(sl=>sl.accepts===item.category);
+    const slotHint=slot?`<div class="modal-slot-hint">📍 יעמוד ב<strong>${categoryEmoji(item.category)} ${categoryHebrew(item.category)}</strong></div>`:'';
     const modal=document.getElementById('shop-modal'),mc=document.getElementById('shop-modal-content');
-    mc.innerHTML=`<div class="modal-emoji">${item.emoji}</div><h3>לקנות ${item.name}?</h3><p class="modal-price"><span class="coin-icon">🪙</span> ${item.price} מטבעות</p><div class="modal-buttons"><button class="btn-primary" id="confirm-buy">כן, קנה!</button><button class="btn-secondary" id="cancel-buy">לא, תודה</button></div>`;
+    mc.innerHTML=`<div class="modal-emoji">${item.emoji}</div><h3>לקנות ${item.name}?</h3>${slotHint}<p class="modal-price"><span class="coin-icon">🪙</span> ${item.price} מטבעות</p><div class="modal-buttons"><button class="btn-primary" id="confirm-buy">כן, קנה!</button><button class="btn-secondary" id="cancel-buy">לא, תודה</button></div>`;
     modal.classList.add('active');
-    document.getElementById('confirm-buy').onclick=()=>{if(spendCoins(item.price)){purchaseItem(item.id);playPurchase();modal.classList.remove('active');showConfetti(20);const t=document.createElement('div');t.className='purchase-toast';t.innerHTML=`<span>${item.emoji}</span> ${item.name} נוסף לבית!`;document.getElementById('screen-shop').appendChild(t);setTimeout(()=>t.remove(),2000);tikkiSay('יופי של קנייה! 🎁',2000)}};
+    document.getElementById('confirm-buy').onclick=()=>{
+        if(spendCoins(item.price)){
+            purchaseItem(item.id);playPurchase();modal.classList.remove('active');showConfetti(20);
+            const t=document.createElement('div');t.className='purchase-toast';
+            t.innerHTML=`<span>${item.emoji}</span><span style="flex:1">${item.name} נקנה!</span><button class="toast-place-btn">← הצב</button>`;
+            document.getElementById('screen-shop').appendChild(t);
+            const placeBtn=t.querySelector('.toast-place-btn');
+            if(placeBtn)placeBtn.onclick=()=>{playClick();t.remove();showScreen('screen-house')};
+            setTimeout(()=>t.remove(),3800);
+            tikkiSay('יופי של קנייה! 🎁',2000);
+        }
+    };
     document.getElementById('cancel-buy').onclick=()=>{playClick();modal.classList.remove('active')};
     modal.onclick=e=>{if(e.target===modal)modal.classList.remove('active')};
 }
 
 // ===== HOUSE =====
 let selItem=null;
-function renderHouse(s){renderSlots(s);renderInv(s);const cd=document.getElementById('house-coins');if(cd)cd.textContent=s.player.coins}
+let lastPlacedSlot=null;
+function renderHouse(s){
+    renderSlots(s);
+    renderInv(s);
+    updateHouseProgress(s);
+    const cd=document.getElementById('house-coins');if(cd)cd.textContent=s.player.coins;
+}
+function updateHouseProgress(s){
+    const placed=Object.keys(s.house.placedItems).length;
+    const total=SLOTS.length;
+    const fill=document.getElementById('hp-fill'),txt=document.getElementById('hp-text');
+    if(fill){fill.style.width=`${(placed/total)*100}%`;fill.classList.toggle('complete',placed===total)}
+    if(txt)txt.textContent=placed===total?`🎉 ${placed}/${total} מושלם!`:`✨ ${placed}/${total} פריטים`;
+}
 function renderSlots(s){
     const sc=document.getElementById('house-slots');
+    const selectedItem=selItem?CATALOG.find(i=>i.id===selItem):null;
     sc.innerHTML=SLOTS.map(sl=>{
         const pid=s.house.placedItems[sl.id],pi=pid?CATALOG.find(i=>i.id===pid):null;
         const imgSrc=pi?`assets/images/items/${pi.id}.png`:'';
-        return `<div class="house-slot ${pi?'filled':'empty'} ${selItem?'accepting':''}" data-slot="${sl.id}" data-accepts="${sl.accepts}" style="left:${sl.x}%;top:${sl.y}%;width:${sl.w}%;height:${sl.h}%">${pi?`<img class="placed-item-img" src="${imgSrc}" alt="${pi.emoji}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placed-item-emoji" style="display:none">${pi.emoji}</span><span class="placed-item-name">${pi.name}</span>`:`<span class="slot-label">${sl.label}</span>`}</div>`;
+        let cls=pi?'filled':'empty';
+        if(!pi&&selectedItem){
+            cls+= selectedItem.category===sl.accepts ? ' accepting' : ' dimmed';
+        }
+        if(lastPlacedSlot===sl.id)cls+=' just-placed';
+        const inner=pi
+            ?`<img class="placed-item-img" src="${imgSrc}" alt="${pi.emoji}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="placed-item-emoji" style="display:none">${pi.emoji}</span><span class="placed-item-name">${pi.name}</span>`
+            :`<span class="slot-cat-badge" title="${categoryHebrew(sl.accepts)}">${categoryEmoji(sl.accepts)}</span><span class="slot-label">${sl.label}</span>`;
+        return `<div class="house-slot ${cls}" data-slot="${sl.id}" data-accepts="${sl.accepts}" style="left:${sl.x}%;top:${sl.y}%;width:${sl.w}%;height:${sl.h}%">${inner}</div>`;
     }).join('');
-    sc.querySelectorAll('.house-slot').forEach(el=>{el.addEventListener('click',()=>{
-        const slId=el.dataset.slot,acc=el.dataset.accepts;
-        if(s.house.placedItems[slId]){playClick();removeItem(slId);selItem=null;return}
-        if(selItem){const item=CATALOG.find(i=>i.id===selItem);if(item&&item.category===acc){playPurchase();placeItem(slId,selItem);selItem=null;tikkiSay('יפה! 🏠',1500)}else{el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),500)}}
-    })});
+    if(lastPlacedSlot){setTimeout(()=>{lastPlacedSlot=null},700)}
+    sc.querySelectorAll('.house-slot').forEach(el=>{
+        el.addEventListener('click',()=>{
+            const slId=el.dataset.slot,acc=el.dataset.accepts;
+            const cur=G();
+            if(cur.house.placedItems[slId]){
+                playClick();
+                showHouseActionModal(slId,cur.house.placedItems[slId]);
+                return;
+            }
+            if(selItem){
+                const item=CATALOG.find(i=>i.id===selItem);
+                if(item&&item.category===acc){
+                    playPurchase();
+                    lastPlacedSlot=slId;
+                    placeItem(slId,selItem);
+                    selItem=null;
+                    tikkiSay('יפה! 🏠',1500);
+                } else {
+                    playWrong();
+                    el.classList.add('shake');
+                    setTimeout(()=>el.classList.remove('shake'),500);
+                    if(item){
+                        tikkiSay(`זאת משבצת ל${categoryHebrew(acc)}! ${categoryEmoji(acc)}`,2500);
+                    }
+                }
+            } else {
+                tikkiSay(`קודם בחר פריט מהמלאי ${categoryEmoji(acc)}`,2200);
+            }
+        });
+    });
 }
 function renderInv(s){
     const tray=document.getElementById('house-inventory');
+    const wrap=document.getElementById('house-inv-wrap');
+    const title=document.getElementById('house-tray-title');
     const placed=Object.values(s.house.placedItems);
     const avail=s.shop.purchasedItems.filter(id=>!placed.includes(id)).map(id=>CATALOG.find(i=>i.id===id)).filter(Boolean);
+    if(wrap)wrap.classList.remove('has-overflow');
     if(avail.length===0&&s.shop.purchasedItems.length===0){
-        tray.innerHTML=`<div class="empty-inventory"><p>אין עדיין פריטים!</p><button class="btn-primary" id="h2s">🛍️ לכו לחנות</button></div>`;
-        const b=document.getElementById('h2s');if(b)b.onclick=()=>{playClick();showScreen('screen-shop')};return;
+        if(title)title.textContent='📦 אין עדיין פריטים';
+        tray.classList.add('centered');
+        tray.innerHTML=`<div class="empty-inventory"><p>קודם צריך לקנות פריטים בחנות 🛍️</p><button class="btn-primary" id="h2s">🛍️ לחנות</button></div>`;
+        const b=document.getElementById('h2s');if(b)b.onclick=()=>{playClick();showScreen('screen-shop')};
+        return;
     }
-    if(avail.length===0){tray.innerHTML='<div class="empty-inventory"><p>כל הפריטים מוצבים! 🎉</p></div>';return}
-    tray.innerHTML=avail.map(it=>`<div class="inventory-item ${selItem===it.id?'selected':''}" data-id="${it.id}" data-category="${it.category}"><img class="inv-item-img" src="assets/images/items/${it.id}.png" alt="${it.emoji}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="inv-emoji" style="display:none">${it.emoji}</span><span class="inv-name">${it.name}</span></div>`).join('');
+    if(avail.length===0){
+        if(title)title.textContent='📦 כל הפריטים בבית!';
+        tray.classList.add('centered');
+        tray.innerHTML=`<div class="empty-inventory"><p>🎉 כל הפריטים שלך מסודרים!</p><button class="btn-secondary" id="h2s2">🛍️ לקנות עוד</button></div>`;
+        const b=document.getElementById('h2s2');if(b)b.onclick=()=>{playClick();showScreen('screen-shop')};
+        return;
+    }
+    if(title)title.textContent=avail.length===1?`📦 פריט אחד לסידור`:`📦 יש לך ${avail.length} פריטים לסידור`;
+    tray.classList.toggle('centered',avail.length<=3);
+    tray.innerHTML=avail.map(it=>`<div class="inventory-item ${selItem===it.id?'selected':''}" data-id="${it.id}" data-category="${it.category}"><span class="inv-cat-badge" title="${categoryHebrew(it.category)}">${categoryEmoji(it.category)}</span><img class="inv-item-img" src="assets/images/items/${it.id}.png" alt="${it.emoji}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="inv-emoji" style="display:none">${it.emoji}</span><span class="inv-name">${it.name}</span></div>`).join('');
     tray.querySelectorAll('.inventory-item').forEach(el=>{el.addEventListener('click',()=>{playClick();const id=el.dataset.id;selItem=selItem===id?null:id;renderHouse(G())})});
+    if(wrap&&avail.length>=4){requestAnimationFrame(()=>{if(tray.scrollWidth>tray.clientWidth)wrap.classList.add('has-overflow')})}
+}
+function showHouseActionModal(slotId,itemId){
+    const item=CATALOG.find(i=>i.id===itemId);if(!item)return;
+    const slot=SLOTS.find(sl=>sl.id===slotId);
+    const modal=document.getElementById('house-modal'),mc=document.getElementById('house-modal-content');
+    modal.classList.add('house-action-modal');
+    mc.innerHTML=`<div class="modal-emoji">${item.emoji}</div><h3>${item.name}</h3><p style="color:var(--lb-black-light);font-size:.95rem;margin-bottom:8px">ב${slot?slot.label:'מקום'}</p><div class="modal-buttons"><button class="btn-primary" id="ha-move">✏️ הזז למקום אחר</button><button class="btn-warn" id="ha-remove">🗑️ הוצא מהבית</button><button class="btn-secondary" id="ha-cancel">ביטול</button></div>`;
+    modal.classList.add('active');
+    document.getElementById('ha-move').onclick=()=>{
+        playClick();
+        removeItem(slotId);
+        selItem=itemId;
+        modal.classList.remove('active');
+        modal.classList.remove('house-action-modal');
+        tikkiSay(`עכשיו בחר משבצת חדשה ${categoryEmoji(item.category)}`,2200);
+    };
+    document.getElementById('ha-remove').onclick=()=>{
+        playClick();
+        modal.classList.remove('active');
+        modal.classList.remove('house-action-modal');
+        confirmRemoveModal(slotId,itemId);
+    };
+    document.getElementById('ha-cancel').onclick=()=>{
+        playClick();
+        modal.classList.remove('active');
+        modal.classList.remove('house-action-modal');
+    };
+    modal.onclick=e=>{if(e.target===modal){modal.classList.remove('active');modal.classList.remove('house-action-modal')}};
+}
+function confirmRemoveModal(slotId,itemId){
+    const item=CATALOG.find(i=>i.id===itemId);if(!item)return;
+    const modal=document.getElementById('house-modal'),mc=document.getElementById('house-modal-content');
+    mc.innerHTML=`<div class="modal-emoji">⚠️</div><h3>להוציא את ${item.name}?</h3><p style="color:var(--lb-black-light);margin:12px 0">הפריט יחזור למלאי שלך</p><div class="modal-buttons"><button class="btn-danger" id="cr-yes">כן, להוציא</button><button class="btn-secondary" id="cr-no">לא, להשאיר</button></div>`;
+    modal.classList.add('active');
+    document.getElementById('cr-yes').onclick=()=>{
+        playClick();
+        removeItem(slotId);
+        modal.classList.remove('active');
+    };
+    document.getElementById('cr-no').onclick=()=>{
+        playClick();
+        modal.classList.remove('active');
+    };
+    modal.onclick=e=>{if(e.target===modal)modal.classList.remove('active')};
+}
+function showBakeryComplete(){
+    const modal=document.getElementById('house-modal'),mc=document.getElementById('house-modal-content');
+    modal.classList.add('bakery-complete-modal');
+    mc.innerHTML=`<div class="complete-emoji">🏆</div><h3 class="complete-title">המאפייה מושלמת!</h3><p class="complete-sub">סידרת את כל 12 הפריטים! 🎉🥐✨</p><div class="modal-buttons"><button class="btn-primary" id="bc-ok">תודה!</button></div>`;
+    modal.classList.add('active');
+    showFireworks(8);
+    showConfetti(60);
+    playLevelUp&&playLevelUp();
+    tikkiSay('המאפייה מושלמת! 🎉',3000);
+    document.getElementById('bc-ok').onclick=()=>{
+        playClick();
+        modal.classList.remove('active');
+        modal.classList.remove('bakery-complete-modal');
+    };
+    modal.onclick=e=>{if(e.target===modal){modal.classList.remove('active');modal.classList.remove('bakery-complete-modal')}};
 }
 
 // ===== MAP =====
@@ -1820,8 +2082,14 @@ document.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('shop-back-btn').addEventListener('click',()=>{playClick();showScreen('screen-map')});
     // Shop tabs
     document.querySelectorAll('.shop-tab').forEach(tab=>{tab.addEventListener('click',()=>{
+        if(tab.classList.contains('active'))return;
+        playClick();
         document.querySelectorAll('.shop-tab').forEach(t=>t.classList.remove('active'));
-        tab.classList.add('active');shopFilter=tab.dataset.cat;renderShop(G());
+        tab.classList.add('active');
+        shopFilter=tab.dataset.cat;
+        const grid=document.getElementById('shop-grid');
+        if(grid){grid.classList.add('fading');setTimeout(()=>{renderShop(G());grid.classList.remove('fading')},150)}
+        else{renderShop(G())}
     })});
     subscribe(renderShop);renderShop(G());
     // Level
@@ -1829,6 +2097,14 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     // House
     document.getElementById('house-back-btn').addEventListener('click',()=>{playClick();selItem=null;showScreen('screen-map')});
+    // Bakery background image — fallback to gradient if PNG missing
+    const bakeryBg=document.getElementById('bakery-bg');
+    if(bakeryBg){
+        const img=new Image();
+        img.onload=()=>{};
+        img.onerror=()=>{bakeryBg.classList.add('no-bg-image')};
+        img.src='assets/images/backgrounds/bakery.png';
+    }
     subscribe(renderHouse);renderHouse(G());
 
     // Sound toggle
